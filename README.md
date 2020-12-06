@@ -1,5 +1,5 @@
-WebRTC - Western Illinois University Thesis
-    Dennis McMeekan
+# WebRTC - Western Illinois University Thesis
+###    Dennis McMeekan
 
 ## To Use
 The signaling server uses Node.js and and can be started as such:
