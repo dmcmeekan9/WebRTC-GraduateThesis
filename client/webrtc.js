@@ -9,10 +9,14 @@ let localPeerConnection;
 let remotePeerConnection;
 let localStream;
 let bytesPrev;
+let jitterPrev;
 let timestampPrev;
 
 const getUserMediaConstraintsDiv = document.querySelector('div#getUserMediaConstraints');
+
 const bitrateDiv = document.querySelector('div#bitrate');
+const jitterDiv = document.querySelector('div#jitter');
+
 const peerDiv = document.querySelector('div#peer');
 const senderStatsDiv = document.querySelector('div#senderStats');
 const receiverStatsDiv = document.querySelector('div#receiverStats');
@@ -42,7 +46,7 @@ function hangup() {
       .all([
         remotePeerConnection
             .getStats(null)
-            .then(calcBitrate, err => console.log(err))
+            .then(calcStats, err => console.log(err))
       ])
       .then(() => {
         localPeerConnection = null;
@@ -156,13 +160,16 @@ function onAddIceCandidateError(error) {
 }
 
 // Calculate Video Bitrate
-function calcBitrate(results){
+function calcStats(results){
   results.forEach(report => {
     const now = report.timestamp;
 
     let bitrate;
+    let jitter;
+
     if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
       const bytes = report.bytesReceived;
+    
       if (timestampPrev) {
         bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
         bitrate = Math.floor(bitrate);
@@ -170,9 +177,16 @@ function calcBitrate(results){
       bytesPrev = bytes;
       timestampPrev = now;
     }
+    if (report.type === 'inbound-rtp') {
+      jitter = report.jitter;
+    }
     if (bitrate) {
       bitrate += ' kbits/sec';
       bitrateDiv.innerHTML = `<strong>Bitrate:</strong>${bitrate}`;
+    }
+    if (jitter) {
+      jitter += ' milliseconds';
+      jitterDiv.innerHTML = `<strong>Jitter:</strong>${jitter}`;
     }
   });
 }
@@ -182,7 +196,7 @@ setInterval(() => {
   if (localPeerConnection && remotePeerConnection) {
     remotePeerConnection
         .getStats(null)
-        .then(calcBitrate, err => console.log(err));
+        .then(calcStats, err => console.log(err));
   } else {
     console.log('Not connected yet');
   }
