@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!-- Page that is displayed when going to: https://localhost:8443 -->
+<html>
+  <head>
+    <title>WebRTC Unsecure Prototype</title>
+    <!-- Cannot get external style sheet to work 
+    <link rel="stylesheet" type="text/css" href="/client/main.css"/> 
+    -->
+    <style>
+      body {
+        font-family: Arial;
+        color: black;
+      }
+
+      .split {
+        height: 100%;
+        width: 50%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        overflow-x: hidden;
+        padding-top: 20px;
+      }
+
+      .left {
+        left: 0;
+        background-color: rgb(102, 51, 153);
+      }
+
+      .right {
+        right: 0;
+        background-color: rgb(255, 204, 0);
+      }
+
+      .centered {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .centered video {
+        display: block;
+        margin: 0 auto;   
+      }
+      button {
+        background-color:  rgb(255, 204, 0);
+        border: none;
+        border-radius: 2px;
+        color: black;
+        font-family: 'Roboto', sans-serif;
+        font-size: 0.8em;
+        margin: 0 0 1em 0;
+        padding: 0.5em 0.7em 0.6em 0.7em;
+      }
+      
+      button:active {
+        background-color:  rgb(204, 168, 21);
+      }
+
+      button:hover {
+        background-color: rgb(204, 168, 21);
+      }
+
+      button[disabled] {
+        color: rgb(103, 101, 101);
+      }
+
+      button[disabled]:hover {
+        background-color: rgb(255, 204, 0);
+      }
+      video {
+        background: #222;
+        margin: 0 0 20px 0;
+        --width: 100%;
+        width: var(--width);
+        height: calc(var(--width) * 0.75);
+      }
+      div#getUserMedia {
+        padding: 0 0 8px 0;
+      }
+      div.output {
+        background-color: #eee;
+        display: inline-block;
+        font-family: 'Inconsolata', 'Courier New', monospace;
+        font-size: 0.9em;
+        padding: 10px 10px 10px 25px;
+        position: relative;
+        top: 10px;
+        white-space: pre;
+        width: 270px;
+      }
+      section p:last-of-type {
+        margin: 0;
+      }
+
+      section {
+        border-bottom: 1px solid #eee;
+        margin: 0 0 30px 0;
+        padding: 0 0 20px 0;
+      }
+
+      section:last-of-type {
+        border-bottom: none;
+        padding: 0 0 1em 0;
+      }
+      section#statistics div {
+      display: inline-block;
+      font-family: 'Inconsolata', 'Courier New', monospace;
+      vertical-align: top;
+      width: 308px;
+    }
+
+    section#statistics div#senderStats {
+      margin: 0 20px 0 0;
+    }
+
+    section#constraints > div {
+      margin: 0 0 20px 0;
+    }
+
+    section#video > div {
+      display: inline-block;
+      margin: 0 20px 0 0;
+      vertical-align: top;
+      width: calc(50% - 22px);
+    }
+
+    section#video > div div {
+      font-size: 0.9em;
+      margin: 0 0 0.5em 0;
+      width: 320px;
+    }
+
+    h2 {
+      margin: 0 0 1em 0;
+    }
+
+    section#constraints label {
+      display: inline-block;
+      width: 156px;
+    }
+
+    section {
+      margin: 0 0 20px 0;
+      padding: 0 0 15px 0;
+    }
+
+    section#video {
+      width: calc(100% + 20px);
+    }
+      @media screen and (max-width: 720px) {
+        button {
+          font-weight: 500;
+          height: 56px;
+          line-height: 1.3em;
+          width: 90px;
+        }
+
+        div#getUserMedia {
+          padding: 0 0 40px 0;
+        }
+
+        section#statistics div {
+          width: calc(50% - 14px);
+        }
+
+        video {
+          height: 96px;
+        }
+        
+      }
+      div#container {
+        margin: 0 auto 0 auto;
+        max-width: 60em;
+        padding: 1em 1.5em 1.3em 1.5em;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+
+    <!-- Left side Video (Local) -->
+    <div class="split left">
+      <div class="centered">
+        <video id="localVideo" playsinline autoplay muted width="640" height="360"></video>
+        <h2>Local Video</h2>
+        <p>Click below to start local video, and await connection by a peer</p>
+        <div>
+          <button id="getMedia">Get Media</button>
+          <button id="connect" disabled>Connect</button>
+          <button id="hangup" disabled>Hang Up</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right side Video (Remote) -->
+    <div class="split right">
+      <div class="centered">
+        <video id="remoteVideo" playsinline autoplay muted width="640" height="360""></video>
+        <h2>Remote Video</h2>
+        <p>Video will appear when a peer is connected, and below is the bitrate</p>
+        <div id="bitrate"></div>
+        <div>
+          <br />
+          <br />
+          <br />
+        </div>
+      </div>
+    </div>
+
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="webrtc.js"></script>
+
+  </body>
+</html>
