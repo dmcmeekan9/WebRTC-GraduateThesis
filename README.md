@@ -11,7 +11,7 @@ With the server running, visit `https://localhost:8443`.
 
 ## Cases
 ### Case One:
-**Establishing a Peer Connection, without Image Filtering or Random Delays**
+**Establishing a Peer Connection, without Image Filtering or Random Delays** <br/>
 *Averages:*
 - Bitrate:    1750-1850 kbits/sec
   * Low:  1676
