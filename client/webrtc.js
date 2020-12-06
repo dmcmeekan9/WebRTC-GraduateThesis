@@ -16,6 +16,8 @@ const getUserMediaConstraintsDiv = document.querySelector('div#getUserMediaConst
 
 const bitrateDiv = document.querySelector('div#bitrate');
 const jitterDiv = document.querySelector('div#jitter');
+const rttDiv = document.querySelector('div#RTT');
+
 
 const peerDiv = document.querySelector('div#peer');
 const senderStatsDiv = document.querySelector('div#senderStats');
@@ -60,6 +62,7 @@ function hangup() {
   getMediaButton.disabled = false;
 }
 
+// On media success, create stream
 function getUserMediaSuccess(stream) {
   connectButton.disabled = false;
   console.log('GetUserMedia succeeded');
@@ -67,6 +70,7 @@ function getUserMediaSuccess(stream) {
   localVideo.srcObject = stream;
 }
 
+// Acquire Media from Client
 function getMedia() {
     getMediaButton.disabled = true;
     localVideo = document.getElementById('localVideo');
@@ -141,14 +145,6 @@ function getMedia() {
     );
   }
 
-function onAddIceCandidateSuccess() {
-  console.log('AddIceCandidate success.');
-}
-
-function onAddIceCandidateError(error) {
-  console.log(`Failed to add Ice Candidate: ${error.toString()}`);
-}
-
 // Ice Canidate Success
 function onAddIceCandidateSuccess() {
   console.log('AddIceCandidate success.');
@@ -159,14 +155,16 @@ function onAddIceCandidateError(error) {
   console.log(`Failed to add Ice Candidate: ${error.toString()}`);
 }
 
-// Calculate Video Bitrate
+// Calculate Video Bitrate, Jitter, and Network Latency (RTT)
 function calcStats(results){
   results.forEach(report => {
     const now = report.timestamp;
 
     let bitrate;
     let jitter;
+    let RTT;
 
+    // Bitrate caluclated by using Incoming RTP Connection
     if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
       const bytes = report.bytesReceived;
     
@@ -177,16 +175,29 @@ function calcStats(results){
       bytesPrev = bytes;
       timestampPrev = now;
     }
+
+    // Jitter calculated by using Incoming RTP Connection
+    // Delay in Data Transfer
     if (report.type === 'inbound-rtp') {
       jitter = report.jitter;
     }
+
+    // Total Round Trip Time by using Candidate Pair Connection
+    // Amount of time it takes a packet to get from client to server and back
+    if (report.type === 'candidate-pair') {
+      RTT = report.totalRoundTripTime;
+    }
     if (bitrate) {
       bitrate += ' kbits/sec';
-      bitrateDiv.innerHTML = `<strong>Bitrate:</strong>${bitrate}`;
+      bitrateDiv.innerHTML = `<strong>Bitrate: </strong>${bitrate}`;
     }
     if (jitter) {
       jitter += ' milliseconds';
-      jitterDiv.innerHTML = `<strong>Jitter:</strong>${jitter}`;
+      jitterDiv.innerHTML = `<strong>Jitter: </strong>${jitter}`;
+    }
+    if (RTT) {
+      RTT += ' milliseconds';
+      rttDiv.innerHTML = `<strong>Total Round Trip Time: </strong>${RTT}`;
     }
   });
 }
