@@ -13,13 +13,13 @@ With the server running, visit `https://localhost:8443`.
 ### Case One:
 **Establishing a Peer Connection, without Image Filtering or Random Delays**
 *Averages:*
- Bitrate:    Roughly 1750-1850 kbits/sec
+- Bitrate:    Roughly 1750-1850 kbits/sec
   * Low:  1676
   * High: 1829
- Jitter:     0.004 milliseconds
+- Jitter:     0.004 milliseconds
   * Low:  0.002
   * High: 0.007
- RTT:        0.015 milliseconds
+- RTT:        0.015 milliseconds
   * Low:  0.012
   * High: 0.019
 
