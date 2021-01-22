@@ -1,49 +1,17 @@
 Item #1: Covert channel implementation using filters
  
-Case 1:
- 
-Sending end:
-Receiving end:
-Measure the video quality (baseline) (jitter, network latency through out for window, data rate)  
- 
 Case 2:
- 
-Sending end:
-Read a bit pattern from the user using an input form at the sending end
-Encode the bit pattern as delays using image filtering when sending the video
-Receiving end:
-Sense bit pattern by measuring the delays in the incoming video stream
-Display the sensed bit pattern; measure the rms error 
-Measure the video quality with signalling 
- 
+Output that canvas to a Peer Connection,
+Reverse the Data Transformation
+
 Case 3:
- 
-Potential Fix #1
---------------------
-Sending end:      
-       -  Read a bit  from the user using an input form at the sending end
-       -  Encode the bit pattern as delays using image filtering when sending the video
-       -  To add random delays into image filtering (simulating a control by the admin)
-Receiver’s end:
-       -  Sense the bit pattern by measuring the delays in the incoming video stream
-       -  Display the sensed bit pattern; measure the rms error
-       -  Measure video quality
- 
-Complete all these by 12/7.  
+Add Random Delays
+
+User Input???
+*************************************************************************************************************************************************************************************
  
 Have a detailed written plan about fixing IP leaks.  
+    Distributed Hash Table Server Representation
 Revised Documentation Organization
 Final Presentation
 
-// Calculate Jitter
-function calcJitter(results){
-  results.forEach(report => {
-    const now = report.timestamp;
-
-    let bitrate;
-    if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
-      if (jitter) {
-        bitrateDiv.innerHTML = `<strong>Jitter:</strong>${jitter}`;
-      }
-  };
-}

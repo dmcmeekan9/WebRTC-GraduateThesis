@@ -1,10 +1,20 @@
-
 'use strict';
+// Global/Function Scoped
 var localVideo;
 var remoteVideo;
 var uuid;
 var serverConnection;
+var bitPattern;
 
+/*****************************************************************************************************************************************************************************************************/
+//var testVideo;
+var inputCanvas = document.getElementById('inputCanvas').getContext( '2d' );
+var outputCanvas = document.getElementById('outputCanvas').getContext( '2d' );
+var width = 640;
+var height = 360;
+/*****************************************************************************************************************************************************************************************************/
+
+// Block Scoped
 let localPeerConnection;
 let remotePeerConnection;
 let localStream;
@@ -12,203 +22,277 @@ let bytesPrev;
 let jitterPrev;
 let timestampPrev;
 
+// Format Get User Media
 const getUserMediaConstraintsDiv = document.querySelector('div#getUserMediaConstraints');
 
+// Display Bitrate, Jitter, RTT, and BitPattern
 const bitrateDiv = document.querySelector('div#bitrate');
 const jitterDiv = document.querySelector('div#jitter');
 const rttDiv = document.querySelector('div#RTT');
+const patternDiv = document.querySelector('div#bitPattern');
 
-
+// Formatting Statistics 
 const peerDiv = document.querySelector('div#peer');
 const senderStatsDiv = document.querySelector('div#senderStats');
 const receiverStatsDiv = document.querySelector('div#receiverStats');
 
+// Formatting Buttons
 const getMediaButton = document.querySelector('button#getMedia');
 const connectButton = document.querySelector('button#connect');
 const hangupButton = document.querySelector('button#hangup');
 
+// Buttons to Get Media, Connect, and Hangup
 getMediaButton.onclick = getMedia;
 connectButton.onclick = createPeerConnection;
 hangupButton.onclick = hangup;
 
+// Establish Peer Connection
 var peerConnectionConfig = {
-  'iceServers': [
-    {'urls': 'stun:stun.stunprotocol.org:3478'},
-    {'urls': 'stun:stun.l.google.com:19302'},
-  ]
+   'iceServers': [
+      {'urls': 'stun:stun.stunprotocol.org:3478'},
+      {'urls': 'stun:stun.l.google.com:19302'},
+   ]
 };
 
+// Stop Peer Connection (Hangup)
 function hangup() {
-  console.log('Ending call');
-  localPeerConnection.close();
-  remotePeerConnection.close();
+   console.log('Ending call');
+   localPeerConnection.close();
+   remotePeerConnection.close();
 
-  // Query stats One Last Time.
-  Promise
+   // Query stats One Last Time.
+   Promise
       .all([
-        remotePeerConnection
+         remotePeerConnection
             .getStats(null)
             .then(calcStats, err => console.log(err))
       ])
       .then(() => {
-        localPeerConnection = null;
-        remotePeerConnection = null;
-      });
+         localPeerConnection = null;
+         remotePeerConnection = null;
+       });
 
-  localStream.getTracks().forEach(track => track.stop());
-  localStream = null;
+   // Receive all Tracks
+   localStream.getTracks().forEach(track => track.stop());
+   localStream = null;
 
-  hangupButton.disabled = true;
-  getMediaButton.disabled = false;
+   // Disable Buttons
+   hangupButton.disabled = true;
+   getMediaButton.disabled = false;
 }
 
-// On media success, create stream
+// On Media Success, Create Stream
 function getUserMediaSuccess(stream) {
-  connectButton.disabled = false;
-  console.log('GetUserMedia succeeded');
-  localStream = stream;
-  localVideo.srcObject = stream;
+   connectButton.disabled = false;
+   console.log('GetUserMedia succeeded');
+   
+   localStream = stream;
+   localVideo.srcObject = stream;
+   //testVideo.srcObject = stream;
+   
+   drawToCanvas();
+   /*****************************************************************************************************************************************************************************************************/
 }
 
 // Acquire Media from Client
 function getMedia() {
-    getMediaButton.disabled = true;
-    localVideo = document.getElementById('localVideo');
-    remoteVideo = document.getElementById('remoteVideo');
-    if (localStream) {
+   getMediaButton.disabled = true;
+   localVideo = document.getElementById('localVideo');
+   remoteVideo = document.getElementById('remoteVideo');
+   //testVideo = document.getElementById('testVideo');    /******************************************************************************************************************************************************************/
+
+   if (localStream) {
       localStream.getTracks().forEach(track => track.stop());
       const videoTracks = localStream.getVideoTracks();
       for (let i = 0; i !== videoTracks.length; ++i) {
-        videoTracks[i].stop();
+         videoTracks[i].stop();
       }
-    }
-    var constraints = {
+   }
+   
+   var constraints = {
       video: true,
-      audio: true,
-    }
-    navigator.mediaDevices.getUserMedia(constraints)
-        .then(getUserMediaSuccess)
-        .catch(e => {
-          const message = `getUserMedia error: ${e.name}\nPermissionDeniedError may mean invalid constraints.`;
-          alert(message);
-          console.log(message);
-          getMediaButton.disabled = false;
-        });
-  }
+      audio: true
+   }
+   
+   navigator.mediaDevices.getUserMedia(constraints)
+      .then(getUserMediaSuccess)
+      .catch(e => {
+         const message = `getUserMedia error: ${e.name}\nPermissionDeniedError may mean invalid constraints.`;
+         alert(message);
+         console.log(message);
+         getMediaButton.disabled = false;
+      });
+}
 
-  // Create Peer Connection
-  function createPeerConnection() {
-    connectButton.disabled = true;
-    hangupButton.disabled = false;
-  
-    bytesPrev = 0;
-    timestampPrev = 0;
-    localPeerConnection = new RTCPeerConnection(null);
-    remotePeerConnection = new RTCPeerConnection(null);
-    localStream.getTracks().forEach(track => localPeerConnection.addTrack(track, localStream));
-    console.log('localPeerConnection creating offer');
-    localPeerConnection.onnegotiationeeded = () => console.log('Negotiation needed - localPeerConnection');
-    remotePeerConnection.onnegotiationeeded = () => console.log('Negotiation needed - remotePeerConnection');
-    localPeerConnection.onicecandidate = e => {
+// Create Peer Connection
+function createPeerConnection() {
+   connectButton.disabled = true;
+   hangupButton.disabled = false;
+
+   bytesPrev = 0;
+   timestampPrev = 0;
+   localPeerConnection = new RTCPeerConnection(null);
+   remotePeerConnection = new RTCPeerConnection(null);
+
+   localStream = outputCanvas.captureStream(); /************************************************************************************************************************************************************ */
+   localStream.getTracks().forEach(track => localPeerConnection.addTrack(track, localStream));
+   console.log('localPeerConnection creating offer');
+   localPeerConnection.onnegotiationeeded = () => console.log('Negotiation needed - localPeerConnection');
+   remotePeerConnection.onnegotiationeeded = () => console.log('Negotiation needed - remotePeerConnection');
+   localPeerConnection.onicecandidate = e => {
       console.log('Candidate localPeerConnection');
-      remotePeerConnection
-          .addIceCandidate(e.candidate)
-          .then(onAddIceCandidateSuccess, onAddIceCandidateError);
-    };
-    remotePeerConnection.onicecandidate = e => {
+   remotePeerConnection
+      .addIceCandidate(e.candidate)
+      .then(onAddIceCandidateSuccess, onAddIceCandidateError);
+   };
+
+   remotePeerConnection.onicecandidate = e => {
       console.log('Candidate remotePeerConnection');
       localPeerConnection
-          .addIceCandidate(e.candidate)
-          .then(onAddIceCandidateSuccess, onAddIceCandidateError);
-    };
-    remotePeerConnection.ontrack = e => {
+         .addIceCandidate(e.candidate)
+         .then(onAddIceCandidateSuccess, onAddIceCandidateError);
+   };
+
+   remotePeerConnection.ontrack = e => {
       if (remoteVideo.srcObject !== e.streams[0]) {
-        console.log('remotePeerConnection got stream');
-        remoteVideo.srcObject = e.streams[0];
+         console.log('remotePeerConnection got stream');
+         remoteVideo.srcObject = e.streams[0];
       }
-    };
-    localPeerConnection.createOffer().then(
-        desc => {
-          console.log('localPeerConnection offering');
-          localPeerConnection.setLocalDescription(desc);
-          remotePeerConnection.setRemoteDescription(desc);
-          remotePeerConnection.createAnswer().then(
-              desc2 => {
-                console.log('remotePeerConnection answering');
-                remotePeerConnection.setLocalDescription(desc2);
-                localPeerConnection.setRemoteDescription(desc2);
-              },
-              err => console.log(err)
-          );
-        },
-        err => console.log(err)
-    );
-  }
+   };
+    
+   localPeerConnection.createOffer().then(
+      desc => {
+         console.log('localPeerConnection offering');
+         localPeerConnection.setLocalDescription(desc);
+         remotePeerConnection.setRemoteDescription(desc);
+         remotePeerConnection.createAnswer().then(
+            desc2 => {
+               console.log('remotePeerConnection answering');
+               remotePeerConnection.setLocalDescription(desc2);
+               localPeerConnection.setRemoteDescription(desc2);
+            },
+               err => console.log(err)
+         );
+      },
+         err => console.log(err)
+   );
+}
+
+// ADDED FUNCTION *********************************************************************************************************************************************************/
+
+function drawToCanvas() {
+   // Draw Video to Input Canvas
+   inputCanvas.drawImage( localVideo, 0, 0, width, height );
+
+   // Acquiring Pixel Data from Input Canvas
+   var pixelData = inputCanvas.getImageData( 0, 0, width, height );
+
+   var avg, i;
+
+   // Greyscale Transformation
+   for( i = 0; i < pixelData.data.length; i += 4 ) {
+      avg = ( pixelData.data[ i ] + pixelData.data[ i + 1 ] + pixelData.data[ i + 2 ] ) / 3;
+      pixelData.data[ i ] = avg;
+      pixelData.data[ i + 1 ] = avg;
+      pixelData.data[ i + 2 ] = avg;
+   }
+
+   // Output data to Output Canvas
+   outputCanvas.putImageData( pixelData, 0, 0 );
+   requestAnimationFrame( drawToCanvas );
+}
+
+function reverseData() {
+   // Draw Video to Input Canvas
+   inputCanvas.drawImage( localVideo, 0, 0, width, height );
+
+   // Acquiring Pixel Data from Input Canvas
+   var pixelData = inputCanvas.getImageData( 0, 0, width, height );
+
+   var avg, i;
+
+   // Greyscale Transformation
+   for( i = 0; i < pixelData.data.length; i += 4 ) {
+      avg = ( pixelData.data[ i ] + pixelData.data[ i + 1 ] + pixelData.data[ i + 2 ] ) / 3;
+      pixelData.data[ i ] = avg;
+      pixelData.data[ i + 1 ] = avg;
+      pixelData.data[ i + 2 ] = avg;
+   }
+
+   // Output data to Output Canvas
+   outputCanvas.putImageData( pixelData, 0, 0 );
+   requestAnimationFrame( reverseData );
+}
+
+
 
 // Ice Canidate Success
 function onAddIceCandidateSuccess() {
-  console.log('AddIceCandidate success.');
+   console.log('AddIceCandidate success.');
 }
 
 // Ice Canidate Failure
 function onAddIceCandidateError(error) {
-  console.log(`Failed to add Ice Candidate: ${error.toString()}`);
+   console.log(`Failed to add Ice Candidate: ${error.toString()}`);
 }
 
 // Calculate Video Bitrate, Jitter, and Network Latency (RTT)
 function calcStats(results){
-  results.forEach(report => {
-    const now = report.timestamp;
+   results.forEach(report => {
+      const now = report.timestamp;
 
-    let bitrate;
-    let jitter;
-    let RTT;
+      let bitrate;
+      let jitter;
+      let RTT;
 
-    // Bitrate caluclated by using Incoming RTP Connection
-    if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
-      const bytes = report.bytesReceived;
+      // Bitrate caluclated by using Incoming RTP Connection
+      if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
+         const bytes = report.bytesReceived;
     
       if (timestampPrev) {
-        bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
-        bitrate = Math.floor(bitrate);
+         bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
+         bitrate = Math.floor(bitrate);
       }
       bytesPrev = bytes;
       timestampPrev = now;
-    }
+      }
 
-    // Jitter calculated by using Incoming RTP Connection
-    // Delay in Data Transfer
-    if (report.type === 'inbound-rtp') {
-      jitter = report.jitter;
-    }
+      // Jitter calculated by using Incoming RTP Connection
+      // Delay in Data Transfer
+      if (report.type === 'inbound-rtp') {
+         jitter = report.jitter;
+      }
 
-    // Total Round Trip Time by using Candidate Pair Connection
-    // Amount of time it takes a packet to get from client to server and back
-    if (report.type === 'candidate-pair') {
-      RTT = report.totalRoundTripTime;
-    }
-    if (bitrate) {
-      bitrate += ' kbits/sec';
-      bitrateDiv.innerHTML = `<strong>Bitrate: </strong>${bitrate}`;
-    }
-    if (jitter) {
-      jitter += ' milliseconds';
-      jitterDiv.innerHTML = `<strong>Jitter: </strong>${jitter}`;
-    }
-    if (RTT) {
-      RTT += ' milliseconds';
-      rttDiv.innerHTML = `<strong>Total Round Trip Time: </strong>${RTT}`;
-    }
-  });
+      // Total Round Trip Time by using Candidate Pair Connection
+      // Amount of time it takes a packet to get from client to server and back
+      if (report.type === 'candidate-pair') {
+         RTT = report.totalRoundTripTime;
+      }
+
+      if (bitrate) {
+         bitrate += ' kbits/sec';
+         bitrateDiv.innerHTML = `<strong>Bitrate: </strong>${bitrate}`;
+      }
+      if (jitter) {
+         jitter += ' milliseconds';
+         jitterDiv.innerHTML = `<strong>Jitter: </strong>${jitter}`;
+      }
+      if (RTT) {
+         RTT += ' milliseconds';
+         rttDiv.innerHTML = `<strong>Total Round Trip Time: </strong>${RTT}`;
+      }
+   });
+  // Get Bit Pattern
+  bitPattern = document.getElementById('bitInput');
+  patternDiv.innerHTML = `<strong>Bit Pattern: </strong>${bitPattern.value}`;
 }
-
 // Display statistics
 setInterval(() => {
-  if (localPeerConnection && remotePeerConnection) {
-    remotePeerConnection
-        .getStats(null)
+   if (localPeerConnection && remotePeerConnection) {
+      remotePeerConnection
+         .getStats(null)
         .then(calcStats, err => console.log(err));
-  } else {
-    console.log('Not connected yet');
-  }
+   } else {
+      console.log('Not connected yet');
+   }
 }, 1000);
