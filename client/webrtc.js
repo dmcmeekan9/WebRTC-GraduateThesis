@@ -10,6 +10,9 @@ var bitPattern;
 //var testVideo;
 var inputCanvas = document.getElementById('inputCanvas').getContext( '2d' );
 var outputCanvas = document.getElementById('outputCanvas').getContext( '2d' );
+var reverseCanvas = document.getElementById('reverseCanvas').getContext( '2d' );
+const outputStream = document.getElementById('reverseCanvas').captureStream();
+// above was outputCanvas
 var width = 640;
 var height = 360;
 /*****************************************************************************************************************************************************************************************************/
@@ -88,8 +91,9 @@ function getUserMediaSuccess(stream) {
    
    localStream = stream;
    localVideo.srcObject = stream;
+
+
    //testVideo.srcObject = stream;
-   
    drawToCanvas();
    /*****************************************************************************************************************************************************************************************************/
 }
@@ -124,6 +128,7 @@ function getMedia() {
       });
 }
 
+/************************************************************************************************************************************************************/
 // Create Peer Connection
 function createPeerConnection() {
    connectButton.disabled = true;
@@ -134,8 +139,16 @@ function createPeerConnection() {
    localPeerConnection = new RTCPeerConnection(null);
    remotePeerConnection = new RTCPeerConnection(null);
 
-   localStream = outputCanvas.captureStream(); /************************************************************************************************************************************************************ */
+
+   // Reverse the Data Transformation
+   reverseData();
+
+   // Acquire the outputCanvas's Video Stream, which will then be brought into the Remote Stream
+   localStream = outputStream;
+
+
    localStream.getTracks().forEach(track => localPeerConnection.addTrack(track, localStream));
+   //testStream.getTracks().forEach(track => localPeerConnection.addTrack(track, testStream));
    console.log('localPeerConnection creating offer');
    localPeerConnection.onnegotiationeeded = () => console.log('Negotiation needed - localPeerConnection');
    remotePeerConnection.onnegotiationeeded = () => console.log('Negotiation needed - remotePeerConnection');
@@ -156,7 +169,7 @@ function createPeerConnection() {
    remotePeerConnection.ontrack = e => {
       if (remoteVideo.srcObject !== e.streams[0]) {
          console.log('remotePeerConnection got stream');
-         remoteVideo.srcObject = e.streams[0];
+         remoteVideo.srcObject = e.streams[0]; /************************************************************************************************************************************************************/
       }
    };
     
@@ -181,20 +194,20 @@ function createPeerConnection() {
 // ADDED FUNCTION *********************************************************************************************************************************************************/
 
 function drawToCanvas() {
-   // Draw Video to Input Canvas
+   // Draw Video from Input Canvas
    inputCanvas.drawImage( localVideo, 0, 0, width, height );
 
    // Acquiring Pixel Data from Input Canvas
    var pixelData = inputCanvas.getImageData( 0, 0, width, height );
 
-   var avg, i;
+   var grey, i;
 
    // Greyscale Transformation
    for( i = 0; i < pixelData.data.length; i += 4 ) {
-      avg = ( pixelData.data[ i ] + pixelData.data[ i + 1 ] + pixelData.data[ i + 2 ] ) / 3;
-      pixelData.data[ i ] = avg;
-      pixelData.data[ i + 1 ] = avg;
-      pixelData.data[ i + 2 ] = avg;
+      grey = 0.21 * pixelData.data[i] + 0.72 * pixelData.data[i + 1] + 0.07 * pixelData.data[i + 2];
+      pixelData.data[ i ] = grey;
+      pixelData.data[ i + 1 ] = grey;
+      pixelData.data[ i + 2 ] = grey;
    }
 
    // Output data to Output Canvas
@@ -203,24 +216,20 @@ function drawToCanvas() {
 }
 
 function reverseData() {
-   // Draw Video to Input Canvas
-   inputCanvas.drawImage( localVideo, 0, 0, width, height );
+   // Acquiring Pixel Data from output Canvas
+   var pixelData = outputCanvas.getImageData( 0, 0, width, height );
 
-   // Acquiring Pixel Data from Input Canvas
-   var pixelData = inputCanvas.getImageData( 0, 0, width, height );
+   var i;
 
-   var avg, i;
-
-   // Greyscale Transformation
+   // Reverse Greyscale Transformation
    for( i = 0; i < pixelData.data.length; i += 4 ) {
-      avg = ( pixelData.data[ i ] + pixelData.data[ i + 1 ] + pixelData.data[ i + 2 ] ) / 3;
-      pixelData.data[ i ] = avg;
-      pixelData.data[ i + 1 ] = avg;
-      pixelData.data[ i + 2 ] = avg;
+      pixelData.data[ i ] /= 0.21;
+      pixelData.data[ i + 1 ] /= 0.72;
+      pixelData.data[ i + 2 ] /= 0.07;
    }
 
    // Output data to Output Canvas
-   outputCanvas.putImageData( pixelData, 0, 0 );
+   reverseCanvas.putImageData( pixelData, 0, 0 );
    requestAnimationFrame( reverseData );
 }
 

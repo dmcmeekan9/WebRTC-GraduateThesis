@@ -1,11 +1,8 @@
-Item #1: Covert channel implementation using filters
- 
 Case 2:
-Output that canvas to a Peer Connection,
 Reverse the Data Transformation
 
 Case 3:
-Add Random Delays
+Add "Random" Delays
 
 User Input???
 *************************************************************************************************************************************************************************************

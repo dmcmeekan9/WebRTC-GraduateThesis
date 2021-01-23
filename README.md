@@ -64,7 +64,7 @@ With the server running, visit `https://localhost:8443`.
   * Low:  
   * High: 
 ## License
-The MIT License - Copyright (c) 2021 Dennis McMeekan
+Copyright (c) 2021, Dennis McMeekan - The MIT License
 <br>
 Copyright (c) 2014, The WebRTC project authors. All rights reserved.
 </br>
