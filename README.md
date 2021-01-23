@@ -36,7 +36,6 @@ With the server running, visit `https://localhost:8443`.
 1) Takes Video Input and puts data to the First Canvas
 2) Performs a data transformation, then outputs to a Second Canvas, then establishes a Peer Connection
 3) Remote Connection senses the data transformation, reverses the transformation, and then outputs to the Remote Stream
-4) This simulates data channel control by an administrator.
 
 *Averages:*
 - Bitrate:     kbits/sec
@@ -52,6 +51,7 @@ With the server running, visit `https://localhost:8443`.
 1) Takes Video Input and puts data to the First Canvas
 2) Performs a *random* data transformation, then outputs to a Second Canvas, then etablishes a Peer Connection
 3) Remote Connection senses the *random* data transformation, reverses the transformation, and then outputs to the Remote Stream
+4) This simulates data channel control by an administrator.
 
 *Averages:*
 - Bitrate:     kbits/sec

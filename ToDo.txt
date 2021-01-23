@@ -7,21 +7,9 @@ Add "Random" Delays
 User Input???
 *************************************************************************************************************************************************************************************
  
-Have a detailed written plan about fixing IP leaks.  
+Detailed written plan about fixing IP leaks.  
     Distributed Hash Table Server Representation
-Revised Documentation Organization
+    
 Final Presentation
 
-
-
-
-
-Problems: 
-- Breakdown of Source Code ( C programming) amounted in extremely immensive task for time allotted,
-       Changed to a focus of WebRTC API
-
-- Changing of Bit Representation of Video Stream
-       WebRTC API that allows altering of Image Data on a Canvas Element
-
-- Time permitted only an extensive paper upon a Distributed Hash Table Server Representation
 
