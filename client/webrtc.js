@@ -199,15 +199,17 @@ function drawToCanvas() {
 
    // Acquiring Pixel Data from Input Canvas
    var pixelData = inputCanvas.getImageData( 0, 0, width, height );
+   var data = pixelData.data;
 
-   var grey, i;
-
+   var i;
+   
    // Greyscale Transformation
-   for( i = 0; i < pixelData.data.length; i += 4 ) {
-      grey = 0.21 * pixelData.data[i] + 0.72 * pixelData.data[i + 1] + 0.07 * pixelData.data[i + 2];
-      pixelData.data[ i ] = grey;
-      pixelData.data[ i + 1 ] = grey;
-      pixelData.data[ i + 2 ] = grey;
+   for( i = 0; i < data.length; i += 4 ) {
+      var transform = (data[i] + data[i + 1] + data[i + 2]) / 3;
+
+      data[ i ] = transform;
+      data[ i + 1 ] = transform;
+      data[ i + 2 ] = transform;
    }
 
    // Output data to Output Canvas
@@ -218,15 +220,21 @@ function drawToCanvas() {
 function reverseData() {
    // Acquiring Pixel Data from output Canvas
    var pixelData = outputCanvas.getImageData( 0, 0, width, height );
+   var data = pixelData.data;
 
    var i;
 
    // Reverse Greyscale Transformation
-   for( i = 0; i < pixelData.data.length; i += 4 ) {
-      pixelData.data[ i ] /= 0.21;
-      pixelData.data[ i + 1 ] /= 0.72;
-      pixelData.data[ i + 2 ] /= 0.07;
+   
+   for( i = 0; i < data.length; i += 4 ) {
+      //var transform = (data[i] + data[i + 1] + data[i + 2]) * 3;
+      var transform = data[i];
+
+      data[ i ] = transform;
+      data[ i + 1 ] = transform;
+      data[ i + 2 ] = transform;
    }
+   
 
    // Output data to Output Canvas
    reverseCanvas.putImageData( pixelData, 0, 0 );
