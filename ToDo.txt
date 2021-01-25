@@ -1,15 +1,8 @@
-Case 2:
-Reverse the Data Transformation
-
 Case 3:
 Add "Random" Delays
 
-User Input???
 *************************************************************************************************************************************************************************************
- 
-Detailed written plan about fixing IP leaks.  
-    Distributed Hash Table Server Representation
-    
-Final Presentation
+Script
 
+Final Presentation
 

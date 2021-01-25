@@ -6,16 +6,13 @@ var uuid;
 var serverConnection;
 var bitPattern;
 
-/*****************************************************************************************************************************************************************************************************/
 //var testVideo;
 var inputCanvas = document.getElementById('inputCanvas').getContext( '2d' );
 var outputCanvas = document.getElementById('outputCanvas').getContext( '2d' );
 var reverseCanvas = document.getElementById('reverseCanvas').getContext( '2d' );
 const outputStream = document.getElementById('reverseCanvas').captureStream();
-// above was outputCanvas
 var width = 640;
 var height = 360;
-/*****************************************************************************************************************************************************************************************************/
 
 // Block Scoped
 let localPeerConnection;
@@ -139,7 +136,6 @@ function createPeerConnection() {
    localPeerConnection = new RTCPeerConnection(null);
    remotePeerConnection = new RTCPeerConnection(null);
 
-
    // Reverse the Data Transformation
    reverseData();
 
@@ -191,8 +187,10 @@ function createPeerConnection() {
    );
 }
 
-// ADDED FUNCTION *********************************************************************************************************************************************************/
+// Acquire a Random Integer 0-5
+var random = getRandomInt(5);
 
+// Pixel Manipulation
 function drawToCanvas() {
    // Draw Video from Input Canvas
    inputCanvas.drawImage( localVideo, 0, 0, width, height );
@@ -203,9 +201,9 @@ function drawToCanvas() {
 
    var i;
    
-   // Greyscale Transformation
+   // Data Transformation - Grey
    for( i = 0; i < data.length; i += 4 ) {
-      var transform = (data[i] + data[i + 1] + data[i + 2]) / 3;
+      var transform = (data[i] + data[i + 1] + data[i + 2]) * random;
 
       data[ i ] = transform;
       data[ i + 1 ] = transform;
@@ -217,31 +215,42 @@ function drawToCanvas() {
    requestAnimationFrame( drawToCanvas );
 }
 
+// Reverse Pixel Manipulation 
 function reverseData() {
    // Acquiring Pixel Data from output Canvas
-   var pixelData = outputCanvas.getImageData( 0, 0, width, height );
+   var pixelData = inputCanvas.getImageData( 0, 0, width, height );
    var data = pixelData.data;
 
    var i;
 
-   // Reverse Greyscale Transformation
-   
+   // Reverse Data Transformation - Grey
    for( i = 0; i < data.length; i += 4 ) {
-      //var transform = (data[i] + data[i + 1] + data[i + 2]) * 3;
-      var transform = data[i];
+      //var transform = (data[i] + data[i + 1] + data[i + 2]) / random;
 
+      /*
       data[ i ] = transform;
       data[ i + 1 ] = transform;
       data[ i + 2 ] = transform;
+      */
+      var x = data[i];
+      var y = data[i + 1];
+      var z = data[i + 2];
+
+      
+      data[ i ] = x;
+      data[ i + 1 ] = y;
+      data[ i + 2 ] = z;
    }
-   
 
    // Output data to Output Canvas
    reverseCanvas.putImageData( pixelData, 0, 0 );
    requestAnimationFrame( reverseData );
 }
 
-
+//Mozilla API Calls
+function getRandomInt(max) {
+   return Math.floor(Math.random() * Math.floor(max));
+}
 
 // Ice Canidate Success
 function onAddIceCandidateSuccess() {

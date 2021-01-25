@@ -198,7 +198,7 @@
     <div class="split left">
       <div class="centered local">
         <video id="localVideo" playsinline autoplay muted width="640" height="360"></video>
-        <h2>Local Video</h2>
+        <h2>1. Local Video</h2>
         <p>Click below to start local video, and await connection by a peer</p>
         <div>
           <button id="getMedia">Get Media</button>
@@ -218,7 +218,7 @@
           </ul>
          </form>
          -->
-         <h2> Input Canvas </h2>
+         <h2>2. Input Canvas </h2>
          <canvas id="inputCanvas" width="640" height="360"></canvas> 
       </div>
     </div>
@@ -246,21 +246,16 @@
         <!-- <video id='canvas' playsinline autoplay muted width="640" height="360""></video> -->
         <!-- <video id="remoteVideo" playsinline autoplay muted width="640" height="360""></video> -->
         <video id="remoteVideo" playsinline autoplay muted width="640" height="360""></video>
-        <h2>Remote Video</h2>
+        <h2>5. Remote Video</h2>
         <p>Video will appear when a peer is connected, 
           below is the bitrate, jitter, and RTT.</p>
         <div id="bitrate"></div>
         <div id="jitter"></div>
         <div id="RTT"></div>
-        <div id="bitPattern"></div>
-        <div>
-          <br />
-          <br />
-          <br />
-        </div>
-        <h2> Reverse Transformation of Output Canvas, to new Canvas </h2>
+        <!-- <div id="bitPattern"></div> -->
+        <h2>4. Reverse Transformation of Output Canvas, to new Canvas </h2>
         <canvas id="reverseCanvas" width="640" height="360"></canvas> 
-        <h2> Output Canvas with Data Transformation </h2>
+        <h2>3. Output Canvas with Data Transformation </h2>
         <canvas id="outputCanvas" width="640" height="360" ></canvas>
       </div>
     </div>

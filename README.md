@@ -22,13 +22,13 @@ With the server running, visit `https://localhost:8443`.
 2) Outputs to Remote Stream
 
 *Averages:*
-- Bitrate:    1128 kbits/sec
-  * Low:  1008
-  * High: 1248
-- Jitter:     0.003 milliseconds
+- Bitrate:  1128 kbits/sec
+  * Low:    1008
+  * High:   1248
+- Jitter: 0.003 milliseconds
   * Low:  0.001
   * High: 0.005
-- RTT:        0.009 milliseconds
+- RTT:    0.009 milliseconds
   * Low:  0.006
   * High: 0.012
 
@@ -38,15 +38,14 @@ With the server running, visit `https://localhost:8443`.
 3) Remote Connection senses the data transformation, reverses the transformation, and then outputs to the Remote Stream
 
 *Averages:*
-- Bitrate:     kbits/sec
-  * Low:  
-  * High: 
-- Jitter:      milliseconds
-  * Low:  
-  * High: 
-- RTT:         milliseconds
-  * Low:  
-  * High: 
+- Bitrate:  1643.5 kbits/sec
+  * Low:    1385
+  * High:   1902
+- Jitter: N/A
+  * Became unavailable with the use of canvas input and output.
+- RTT:    0.0305 milliseconds
+  * Low:  0.021 
+  * High: 0.040 
 ### Case Three: Establishing a Peer WebRTC Connection, using Covert Channels with Image Filtering AND Random Delays
 1) Takes Video Input and puts data to the First Canvas
 2) Performs a *random* data transformation, then outputs to a Second Canvas, then etablishes a Peer Connection
@@ -54,15 +53,14 @@ With the server running, visit `https://localhost:8443`.
 4) This simulates data channel control by an administrator.
 
 *Averages:*
-- Bitrate:     kbits/sec
-  * Low:  
-  * High: 
-- Jitter:      milliseconds
-  * Low:  
-  * High: 
-- RTT:         milliseconds
-  * Low:  
-  * High: 
+- Bitrate:  1651   kbits/sec
+  * Low:    1328
+  * High:   1974
+- Jitter: N/A
+  * Became unavailable with the use of canvas input and output.
+- RTT:    0.019 milliseconds
+  * Low:  0.010
+  * High: 0.028
 ## License
 Copyright (c) 2021, Dennis McMeekan - The MIT License
 <br>
