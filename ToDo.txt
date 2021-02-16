@@ -1,8 +1,37 @@
-Case 3:
-Add "Random" Delays
+Material:
+Table comparing results -> focus more on benefits of new approaches
 
-*************************************************************************************************************************************************************************************
-Script
 
-Final Presentation
 
+
+
+
+
+Must Do:
+Bit Stream Input - 1 or 0; 0 is no delay, 1 is delay
+   Send data from client to client using peer connection
+
+Fix Reverse Data Transformation
+
+
+
+
+
+
+
+
+
+
+
+
+
+Compare Frame Rates
+
+Seperate Network & Statistics Measurements (Improving the Mean)
+
+
+
+
+Possiblity:
+Prevention Strategy
+Prevention of Data Exfiltration

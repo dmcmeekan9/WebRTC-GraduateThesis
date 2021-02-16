@@ -4,15 +4,24 @@ var localVideo;
 var remoteVideo;
 var uuid;
 var serverConnection;
-var bitPattern;
+
+let sendChannel;
+let receiveChannel;
+
+const dataChannelSend = document.querySelector('textarea#dataChannelSend');
+const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
+const sendButton = document.querySelector('button#sendButton');
+
 
 //var testVideo;
-var inputCanvas = document.getElementById('inputCanvas').getContext( '2d' );
+/*****************************************************************************************************************************************************************************************************/
+/*var inputCanvas = document.getElementById('inputCanvas').getContext( '2d' );
 var outputCanvas = document.getElementById('outputCanvas').getContext( '2d' );
 var reverseCanvas = document.getElementById('reverseCanvas').getContext( '2d' );
 const outputStream = document.getElementById('reverseCanvas').captureStream();
 var width = 640;
 var height = 360;
+*/
 
 // Block Scoped
 let localPeerConnection;
@@ -29,7 +38,7 @@ const getUserMediaConstraintsDiv = document.querySelector('div#getUserMediaConst
 const bitrateDiv = document.querySelector('div#bitrate');
 const jitterDiv = document.querySelector('div#jitter');
 const rttDiv = document.querySelector('div#RTT');
-const patternDiv = document.querySelector('div#bitPattern');
+//const patternDiv = document.querySelector('div#bitPattern');
 
 // Formatting Statistics 
 const peerDiv = document.querySelector('div#peer');
@@ -41,10 +50,11 @@ const getMediaButton = document.querySelector('button#getMedia');
 const connectButton = document.querySelector('button#connect');
 const hangupButton = document.querySelector('button#hangup');
 
-// Buttons to Get Media, Connect, and Hangup
+// Buttons to Get Media, Connect, and Hangup, and Send Data
 getMediaButton.onclick = getMedia;
 connectButton.onclick = createPeerConnection;
 hangupButton.onclick = hangup;
+sendButton.onclick = sendData;
 
 // Establish Peer Connection
 var peerConnectionConfig = {
@@ -89,10 +99,8 @@ function getUserMediaSuccess(stream) {
    localStream = stream;
    localVideo.srcObject = stream;
 
-
    //testVideo.srcObject = stream;
-   drawToCanvas();
-   /*****************************************************************************************************************************************************************************************************/
+   //drawToCanvas(); /*****************************************************************************************************************************************************************************************************/
 }
 
 // Acquire Media from Client
@@ -100,7 +108,8 @@ function getMedia() {
    getMediaButton.disabled = true;
    localVideo = document.getElementById('localVideo');
    remoteVideo = document.getElementById('remoteVideo');
-   //testVideo = document.getElementById('testVideo');    /******************************************************************************************************************************************************************/
+ 
+   //testVideo = document.getElementById('testVideo'); 
 
    if (localStream) {
       localStream.getTracks().forEach(track => track.stop());
@@ -125,22 +134,66 @@ function getMedia() {
       });
 }
 
-/************************************************************************************************************************************************************/
+/*dataChannelSend.addEventListener("keyup", function(){
+   var character = dataChannelSend.value;
+   if(character != 1){
+      dataChannelSend.value = "";
+   }
+   character = dataChannelSend.value;
+   if(character != 0){
+      dataChannelSend.value = "";
+   }
+});*/
+
+/*
+function createDataChannel(){
+   dataChannelSend.placeholder = '';
+   localPeerConnection = new RTCPeerConnection(null);
+   remotePeerConnection = new RTCPeerConnection(null);
+
+   sendChannel = localPeerConnection.createDataChannel('sendDataChannel');
+   console.log('Created send data channel');
+
+   sendChannel.onopen = onSendChannelStateChange;
+   sendChannel.onclose = onSendChannelStateChange;
+
+   localPeerConnection.onicecandidate = e => {
+      onIceCandidate(localConnection, e);
+   };
+
+   remotePeerConnection.onicecandidate = e => {
+      console.log('Candidate remotePeerConnection');
+      localPeerConnection
+         .addIceCandidate(e.candidate)
+         .then(onAddIceCandidateSuccess, onAddIceCandidateError);
+   };
+
+   remotePeerConnection.ondatachannel = receiveChannelCallback;
+}*/
+
+
 // Create Peer Connection
 function createPeerConnection() {
    connectButton.disabled = true;
    hangupButton.disabled = false;
+   dataChannelSend.placeholder = '';
 
    bytesPrev = 0;
    timestampPrev = 0;
    localPeerConnection = new RTCPeerConnection(null);
    remotePeerConnection = new RTCPeerConnection(null);
 
+   sendChannel = localPeerConnection.createDataChannel('sendDataChannel');
+   console.log('Created send data channel');
+
+   sendChannel.onopen = onSendChannelStateChange;
+   sendChannel.onclose = onSendChannelStateChange;
+
    // Reverse the Data Transformation
-   reverseData();
+   //reverseData();              /*****************************************************************************************************************************************************************************************************/
 
    // Acquire the outputCanvas's Video Stream, which will then be brought into the Remote Stream
-   localStream = outputStream;
+   //localStream = outputStream; /*****************************************************************************************************************************************************************************************************/
 
 
    localStream.getTracks().forEach(track => localPeerConnection.addTrack(track, localStream));
@@ -165,9 +218,11 @@ function createPeerConnection() {
    remotePeerConnection.ontrack = e => {
       if (remoteVideo.srcObject !== e.streams[0]) {
          console.log('remotePeerConnection got stream');
-         remoteVideo.srcObject = e.streams[0]; /************************************************************************************************************************************************************/
+         remoteVideo.srcObject = e.streams[0];
       }
    };
+
+   remotePeerConnection.ondatachannel = receiveChannelCallback;
     
    localPeerConnection.createOffer().then(
       desc => {
@@ -187,10 +242,55 @@ function createPeerConnection() {
    );
 }
 
+
+function delay(){
+   setTimeout(delay, 500000);
+}
+
+function sendData() {
+   const data = dataChannelSend.value;
+   sendChannel.send(data);
+   console.log('Sent Data: ' + data);
+
+   if (dataChannelSend.value == 1 || dataChannelSend.value == 0){
+      delay();
+   }
+}
+
+function receiveChannelCallback(event) {
+   console.log('Receive Channel Callback');
+   receiveChannel = event.channel;
+   receiveChannel.onmessage = onReceiveMessageCallback;
+}
+
+function onReceiveMessageCallback(event) {
+   dataChannelReceive.value = event.data;
+   console.log('Received Message: ' + dataChannelReceive.value);
+}
+
+function onSendChannelStateChange() {
+   const readyState = sendChannel.readyState;
+   console.log('Send channel state is: ' + readyState);
+   if (readyState === 'open') {
+      dataChannelSend.disabled = false;
+      dataChannelSend.focus();
+      sendButton.disabled = false;
+   } else {
+      dataChannelSend.disabled = true;
+      sendButton.disabled = true;
+   }
+}
+ 
+function onReceiveChannelStateChange() {
+   const readyState = receiveChannel.readyState;
+   console.log(`Receive channel state is: ${readyState}`);
+}
+
 // Acquire a Random Integer 0-5
-var random = getRandomInt(5);
+//var random = getRandomInt(5);
 
 // Pixel Manipulation
+/*
 function drawToCanvas() {
    // Draw Video from Input Canvas
    inputCanvas.drawImage( localVideo, 0, 0, width, height );
@@ -214,9 +314,10 @@ function drawToCanvas() {
    outputCanvas.putImageData( pixelData, 0, 0 );
    requestAnimationFrame( drawToCanvas );
 }
+*/
 
 // Reverse Pixel Manipulation 
-function reverseData() {
+/*function reverseData() {
    // Acquiring Pixel Data from output Canvas
    var pixelData = inputCanvas.getImageData( 0, 0, width, height );
    var data = pixelData.data;
@@ -227,11 +328,11 @@ function reverseData() {
    for( i = 0; i < data.length; i += 4 ) {
       //var transform = (data[i] + data[i + 1] + data[i + 2]) / random;
 
-      /*
-      data[ i ] = transform;
-      data[ i + 1 ] = transform;
-      data[ i + 2 ] = transform;
-      */
+      
+      //data[ i ] = transform;
+      //data[ i + 1 ] = transform;
+      //data[ i + 2 ] = transform;
+      
       var x = data[i];
       var y = data[i + 1];
       var z = data[i + 2];
@@ -246,6 +347,7 @@ function reverseData() {
    reverseCanvas.putImageData( pixelData, 0, 0 );
    requestAnimationFrame( reverseData );
 }
+*/
 
 //Mozilla API Calls
 function getRandomInt(max) {
@@ -279,9 +381,10 @@ function calcStats(results){
          bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
          bitrate = Math.floor(bitrate);
       }
+      
       bytesPrev = bytes;
       timestampPrev = now;
-      }
+   }
 
       // Jitter calculated by using Incoming RTP Connection
       // Delay in Data Transfer
@@ -308,16 +411,14 @@ function calcStats(results){
          rttDiv.innerHTML = `<strong>Total Round Trip Time: </strong>${RTT}`;
       }
    });
-  // Get Bit Pattern
-  bitPattern = document.getElementById('bitInput');
-  patternDiv.innerHTML = `<strong>Bit Pattern: </strong>${bitPattern.value}`;
 }
+
 // Display statistics
 setInterval(() => {
    if (localPeerConnection && remotePeerConnection) {
       remotePeerConnection
          .getStats(null)
-        .then(calcStats, err => console.log(err));
+         .then(calcStats, err => console.log(err));
    } else {
       console.log('Not connected yet');
    }

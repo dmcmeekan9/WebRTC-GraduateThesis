@@ -187,7 +187,9 @@
         height: auto;
         max-width: 400px;
       }
-
+      textarea {
+        resize: none;
+      }
     </style>
 
   </head>
@@ -198,70 +200,92 @@
     <div class="split left">
       <div class="centered local">
         <video id="localVideo" playsinline autoplay muted width="640" height="360"></video>
-        <h2>1. Local Video</h2>
+        <h2>Local Video</h2>
         <p>Click below to start local video, and await connection by a peer</p>
         <div>
           <button id="getMedia">Get Media</button>
           <button id="connect" disabled>Connect</button>
           <button id="hangup" disabled>Hang Up</button>
         </div>
-        <!--
-        <form id="bitPattern">
-          4-Bit Pattern<br><input type="text" id = "bitInput" minlength="4" maxlength="4" 
-          onKeyDown="validateInput()" value="" />
-          <input type="button" onclick="sendInput()" value="Send">
-          <ul style="list-style:none; font-style:italic;">
-            <li> Must use 0's or 1's</li>
-            <li> Be of Length 4</li>
-            <li> Highlight to Delete</li>
-            <li> Must send bit pattern before connecting to use</li>
-          </ul>
-         </form>
-         -->
-         <h2>2. Input Canvas </h2>
-         <canvas id="inputCanvas" width="640" height="360"></canvas> 
+
+        <script>
+          function validateInput() {
+            var e = event || window.event;  // get event object
+            var key = e.keyCode || e.which; // get key cross-browser
+    
+            if (key < 48 || key > 49) { //if it is not a number ascii code
+              //Prevent default action, which is inserting character
+              if (e.preventDefault) e.preventDefault(); //normal browsers
+              e.returnValue = false; //IE
+            }
+          }
+        </script>
+
+        <P>Send 0 for no delay, and 1 for a delay</P>
+        <P>Must be connected to send, highlight to change</P>
+        <div> 
+          <textarea id = "dataChannelSend" maxlength="1" rows="2" cols="2" onKeyDown="validateInput()"></textarea> 
+          <button id = "sendButton">Send Input</button>
+       </div> 
+
       </div>
     </div>
 
-    <!-- Script Function from Clicking the Button -->
-    <script>
-      function validateInput() {
-        var e = event || window.event;  // get event object
-        var key = e.keyCode || e.which; // get key cross-browser
-
-        if (key < 48 || key > 49) { //if it is not a number ascii code
-          //Prevent default action, which is inserting character
-          if (e.preventDefault) e.preventDefault(); //normal browsers
-            e.returnValue = false; //IE
-        }
-      }
-      function sendInput() {
-        var bitPattern = document.getElementById("bitInput");
-      }
-    </script>
-    
     <!-- Right side Video (Remote) -->
     <div class="split right">
       <div class="centered remote">
-        <!-- <video id='canvas' playsinline autoplay muted width="640" height="360""></video> -->
-        <!-- <video id="remoteVideo" playsinline autoplay muted width="640" height="360""></video> -->
+
         <video id="remoteVideo" playsinline autoplay muted width="640" height="360""></video>
-        <h2>5. Remote Video</h2>
+        <h2>Remote Video</h2>
         <p>Video will appear when a peer is connected, 
           below is the bitrate, jitter, and RTT.</p>
         <div id="bitrate"></div>
         <div id="jitter"></div>
         <div id="RTT"></div>
-        <!-- <div id="bitPattern"></div> -->
+        <textarea id = "dataChannelReceive" rows="2" cols="2" disabled></textarea>
+      </div>
+    </div>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script type ="text/javascript" src="webrtc.js"></script>
+  </body>
+</html>
+
+<!--
+      <form id="bitPattern">
+        4-Bit Pattern<br><input type="text" id = "bitInput" minlength="4" maxlength="4" 
+        onKeyDown="validateInput()" value="" />
+        <input type="button" onclick="sendInput()" value="Send">
+        <ul style="list-style:none; font-style:italic;">
+          <li> Must use 0's or 1's</li>
+          <li> Be of Length 4</li>
+          <li> Highlight to Delete</li>
+          <li> Must send bit pattern before connecting to use</li>
+        </ul>
+        </form>
+        -->
+
+
+        <!-- 
+        <h2>2. Input Canvas </h2>
+        <canvas id="inputCanvas" width="640" height="360"></canvas> 
+        -->
+
+            <!-- Script Function from Clicking the Button 
+    
+      function sendInput() {
+        var bitPattern = document.getElementById("bitInput");
+      }
+    </script>
+    
+  -->
+
+<!-- 
+  <video id='canvas' playsinline autoplay muted width="640" height="360""></video>
+  <video id="remoteVideo" playsinline autoplay muted width="640" height="360""></video>
+
+  <div id="bitPattern"></div>
         <h2>4. Reverse Transformation of Output Canvas, to new Canvas </h2>
         <canvas id="reverseCanvas" width="640" height="360"></canvas> 
         <h2>3. Output Canvas with Data Transformation </h2>
         <canvas id="outputCanvas" width="640" height="360" ></canvas>
-      </div>
-    </div>
-    
-    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-    <script type ="text/javascript" src="webrtc.js"></script>
-
-  </body>
-</html>
+-->
