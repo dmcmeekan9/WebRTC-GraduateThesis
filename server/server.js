@@ -4,6 +4,10 @@ const fs = require('fs');
 const https = require('https');
 const WebSocket = require('ws');
 const WebSocketServer = WebSocket.Server;
+//var data = window.document.getElementById('sendButton');
+//const dataChannelSend = document.querySelector('textarea#dataChannelSend');
+//const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
+//const sendButton = document.querySelector('button#sendButton');
 
 
 // Yes, TLS is required
@@ -47,6 +51,9 @@ wss.on('connection', function(ws) {
 wss.broadcast = function(data) {
   this.clients.forEach(function(client) {
     if(client.readyState === WebSocket.OPEN) {
+      //if (data.value == 1 || data.value == 0){
+      //  delay(1000);
+      //}
       client.send(data);
     }
   });

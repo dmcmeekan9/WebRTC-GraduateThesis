@@ -1,35 +1,13 @@
-Material:
-Table comparing results -> focus more on benefits of new approaches
-
-
-
-
-
-
-
 Must Do:
-Bit Stream Input - 1 or 0; 0 is no delay, 1 is delay
-   Send data from client to client using peer connection
-
-Fix Reverse Data Transformation
-
-
-
-
-
-
-
-
-
-
-
-
-
-Compare Frame Rates
+Send User Input -- 1 or 0
+Implement a delay, 5 milliseconds or none
+Sense the delay
+Relay the User Input -- 1 or 0
 
 Seperate Network & Statistics Measurements (Improving the Mean)
-
-
+   Stabilized Network, Two Computers (One local, One Remote)
+   Compare Frame Rates
+   Table comparing results -> focus more on benefits of new approaches
 
 
 Possiblity:
