@@ -7,15 +7,14 @@ var serverConnection;
 
 let sendChannel;
 let receiveChannel;
+
 var delayTime;
 var delay;
 var data;
-var abc;
-
 const dataChannelSend = document.querySelector('textarea#dataChannelSend');
 const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
 const sendButton = document.querySelector('button#sendButton');
-
+var sent;
 
 //var testVideo;
 /*****************************************************************************************************************************************************************************************************/
@@ -41,7 +40,7 @@ const getUserMediaConstraintsDiv = document.querySelector('div#getUserMediaConst
 const bitrateDiv = document.querySelector('div#bitrate');
 const jitterDiv = document.querySelector('div#jitter');
 const rttDiv = document.querySelector('div#RTT');
-//const patternDiv = document.querySelector('div#bitPattern');
+const frameDiv = document.querySelector('div#frames');
 
 // Formatting Statistics 
 const peerDiv = document.querySelector('div#peer');
@@ -205,6 +204,8 @@ function createPeerConnection() {
 function sendData() {
    data = dataChannelSend.value;
    console.log('Sent Data: ' + data);
+   sent = true;
+   //setTimeout(pause, 10000);
 }
 
 //sendChannel.send(data);
@@ -257,18 +258,18 @@ function drawToCanvas() {
    // Output data to Output Canvas
    outputCanvas.putImageData( pixelData, 0, 0 );
    */
-   console.log(data);
+   //console.log(data);
    if (data == 1){
       delayTime = 100;
       sendButton.disabled = true;
       data = 100;
-      setTimeout(pause, 5000);
+      setTimeout(pause, 10000);
    }
    else if (data == 0){
       delayTime = 5;
       sendButton.disabled = true;
       data = 100;
-      setTimeout(pause, 5000);
+      setTimeout(pause, 10000);
    }
    // if bit rate > 2500, received bit = 0
    // if bit rate < 500, received bit = 1;
@@ -283,6 +284,10 @@ function fx(){
 
 function pause(){
    sendButton.disabled = false;
+}
+
+function pause2(){
+   sent = false;
 }
 
 // Mozilla API Calls
@@ -308,6 +313,7 @@ function calcStats(results){
       let bitrate;
       let jitter;
       let RTT;
+      let framesPer;
 
       // Bitrate caluclated by using Incoming RTP Connection
       if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
@@ -317,6 +323,15 @@ function calcStats(results){
          bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
          bitrate = Math.floor(bitrate);
       }
+      if (bitrate < 600 && sent == true){
+         dataChannelReceive.value = 1;
+         console.log('Received Bit: 1');
+      }
+      else if (bitrate > 1800 && sent == true){
+         dataChannelReceive.value = 0;
+         console.log('Received Bit: 0');
+      }
+      setTimeout(pause2(), 500);
       bytesPrev = bytes;
       timestampPrev = now;
       }
@@ -324,6 +339,10 @@ function calcStats(results){
       // Delay in Data Transfer
       if (report.type === 'inbound-rtp') {
          jitter = report.jitter;
+      }
+      // Frames per Second
+      if (report.type === 'inbound-rtp') {
+         framesPer = report.framesPerSecond;
       }
 
       // Total Round Trip Time by using Candidate Pair Connection
@@ -335,6 +354,10 @@ function calcStats(results){
       if (bitrate) {
          bitrate += ' kbits/sec';
          bitrateDiv.innerHTML = `<strong>Bitrate: </strong>${bitrate}`;
+      }
+      if (framesPer) {
+         framesPer += ' frames/sec';
+         frameDiv.innerHTML = `<strong>Framerate: </strong>${framesPer}`;
       }
       if (jitter) {
          jitter += ' milliseconds';
@@ -356,4 +379,4 @@ setInterval(() => {
    } else {
       console.log('Not connected yet');
    }
-}, 1000);
+}, 1200);

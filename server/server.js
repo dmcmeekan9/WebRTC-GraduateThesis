@@ -51,9 +51,6 @@ wss.on('connection', function(ws) {
 wss.broadcast = function(data) {
   this.clients.forEach(function(client) {
     if(client.readyState === WebSocket.OPEN) {
-      //if (data.value == 1 || data.value == 0){
-      //  delay(1000);
-      //}
       client.send(data);
     }
   });
