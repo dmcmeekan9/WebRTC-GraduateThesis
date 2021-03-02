@@ -14,7 +14,7 @@ var data;
 const dataChannelSend = document.querySelector('textarea#dataChannelSend');
 const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
 const sendButton = document.querySelector('button#sendButton');
-var sent;
+var received;
 
 //var testVideo;
 /*****************************************************************************************************************************************************************************************************/
@@ -204,8 +204,6 @@ function createPeerConnection() {
 function sendData() {
    data = dataChannelSend.value;
    console.log('Sent Data: ' + data);
-   sent = true;
-   //setTimeout(pause, 10000);
 }
 
 //sendChannel.send(data);
@@ -236,6 +234,21 @@ function onReceiveChannelStateChange() {
    const readyState = receiveChannel.readyState;
    console.log(`Receive channel state is: ${readyState}`);
 }
+
+Acquiring Pixel Data from Input Canvas
+var pixelData = inputCanvas.getImageData( 0, 0, width, height );
+var data = pixelData.data;
+var i;
+// Data Transformation - Grey
+for( i = 0; i < data.length; i += 4 ) {
+   var transform = (data[i] + data[i + 1] + data[i + 2]) * random;
+
+   data[ i ] = transform;
+   data[ i + 1 ] = transform;
+   data[ i + 2 ] = transform;
+}
+// Output data to Output Canvas
+outputCanvas.putImageData( pixelData, 0, 0 );
 **********************************************************/
 
 // Draw to Canvas (Possible Pixel Manipulation)
@@ -243,37 +256,19 @@ function drawToCanvas() {
    // Draw Video from Input Canvas
    inputCanvas.drawImage( localVideo, 0, 0, width, height );
 
-   /* Acquiring Pixel Data from Input Canvas
-   var pixelData = inputCanvas.getImageData( 0, 0, width, height );
-   var data = pixelData.data;
-   var i;
-   // Data Transformation - Grey
-   for( i = 0; i < data.length; i += 4 ) {
-      var transform = (data[i] + data[i + 1] + data[i + 2]) * random;
-
-      data[ i ] = transform;
-      data[ i + 1 ] = transform;
-      data[ i + 2 ] = transform;
-   }
-   // Output data to Output Canvas
-   outputCanvas.putImageData( pixelData, 0, 0 );
-   */
-   //console.log(data);
+   console.log(data);
    if (data == 1){
       delayTime = 100;
-      sendButton.disabled = true;
       data = 100;
-      setTimeout(pause, 10000);
+      sendButton.disabled = true;
+      setTimeout(pause, 3000);
    }
    else if (data == 0){
       delayTime = 5;
-      sendButton.disabled = true;
       data = 100;
-      setTimeout(pause, 10000);
+      sendButton.disabled = true;
+      setTimeout(pause, 3000);
    }
-   // if bit rate > 2500, received bit = 0
-   // if bit rate < 500, received bit = 1;
-
    delay = setTimeout(fx, delayTime);
    //requestAnimationFrame( drawToCanvas );
 }
@@ -284,10 +279,6 @@ function fx(){
 
 function pause(){
    sendButton.disabled = false;
-}
-
-function pause2(){
-   sent = false;
 }
 
 // Mozilla API Calls
@@ -323,15 +314,19 @@ function calcStats(results){
          bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
          bitrate = Math.floor(bitrate);
       }
-      if (bitrate < 600 && sent == true){
+      if (bitrate > 1400 && bitrate < 1999){
+         received = false;
+      }
+      else if (bitrate < 600 && received == false){
+         received = true;
          dataChannelReceive.value = 1;
          console.log('Received Bit: 1');
       }
-      else if (bitrate > 1800 && sent == true){
+      else if (bitrate > 2000 && received == false){
+         received = true;
          dataChannelReceive.value = 0;
          console.log('Received Bit: 0');
       }
-      setTimeout(pause2(), 500);
       bytesPrev = bytes;
       timestampPrev = now;
       }
@@ -379,4 +374,4 @@ setInterval(() => {
    } else {
       console.log('Not connected yet');
    }
-}, 1200);
+}, 1300);

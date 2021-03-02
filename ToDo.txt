@@ -1,14 +1,12 @@
-Must Do:
-Send User Input -- 1 or 0
-Implement a delay, 5 milliseconds or none
-Sense the delay
-Relay the User Input -- 1 or 0
+Current Issues:
+   Input 1-0-1-0 ... works fine, want to fully reset after each 1 or 0.
+   Sometimes multiple bits will be received (somewhat fixed?)
+
+Talk to Binto email
 
 Seperate Network & Statistics Measurements (Improving the Mean)
    Stabilized Network, Two Computers (One local, One Remote)
-   Compare Frame Rates
    Table comparing results -> focus more on benefits of new approaches
-
 
 Possiblity:
 Prevention Strategy
