@@ -8,6 +8,7 @@ var serverConnection;
 let sendChannel;
 let receiveChannel;
 
+// Implementing Delay Variables
 var delayTime;
 var delay;
 var data;
@@ -15,11 +16,9 @@ const dataChannelSend = document.querySelector('textarea#dataChannelSend');
 const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
 var received;
 
-//var testVideo;
-/*****************************************************************************************************************************************************************************************************/
+// Image Filtering
 var inputCanvas = document.getElementById('inputCanvas').getContext( '2d' );
 const outputStream = document.getElementById('inputCanvas').captureStream();
-
 var width = 640;
 var height = 360;
 
@@ -141,15 +140,15 @@ function createPeerConnection() {
    localPeerConnection = new RTCPeerConnection(null);
    remotePeerConnection = new RTCPeerConnection(null);
 
-   //dataChannelSend.placeholder = '';
-   //sendChannel = localPeerConnection.createDataChannel('sendDataChannel');
-   //console.log('Created send data channel');
-   //sendChannel.onopen = onSendChannelStateChange;
-   //sendChannel.onclose = onSendChannelStateChange;
 
    // Acquire the outputCanvas's Video Stream, which will then be brought into the Remote Stream
-   localStream = outputStream; /*****************************************************************************************************************************************************************************************************/
+   localStream = outputStream; 
    localStream.getTracks().forEach(track => localPeerConnection.addTrack(track, localStream));
+
+   // Prevention Method       ********************************** One Area to Try for Testing
+   // Simulates a Consistent Delay on the Server Side
+   //setTimeout(pause, 500);
+
    console.log('localPeerConnection creating offer');
    localPeerConnection.onnegotiationeeded = () => console.log('Negotiation needed - localPeerConnection');
    remotePeerConnection.onnegotiationeeded = () => console.log('Negotiation needed - remotePeerConnection');
@@ -167,17 +166,12 @@ function createPeerConnection() {
          .then(onAddIceCandidateSuccess, onAddIceCandidateError);
    };
 
-   //delayNode.delayTime.value = 5;
-   //delayNode = remoteVideo.srcObject.createDelay();
-
    remotePeerConnection.ontrack = e => {
       if (remoteVideo.srcObject !== e.streams[0]) {
          console.log('remotePeerConnection got stream');
          remoteVideo.srcObject = e.streams[0];
       }
    };
-
-   //remotePeerConnection.ondatachannel = receiveChannelCallback;
     
    localPeerConnection.createOffer().then(
       desc => {
@@ -269,6 +263,11 @@ function drawToCanvas() {
    else{
       clearTimeout(fx);
    }
+
+   // Prevention Method    ********************************** One Area to Try for Testing 
+   // Simulates a Consistent Delay on the Sending Side of each Client
+   setTimeout(pause, 500);
+
    delay = setTimeout(fx, delayTime);
    //requestAnimationFrame( drawToCanvas );
 }
@@ -314,7 +313,7 @@ function calcStats(results){
          bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
          bitrate = Math.floor(bitrate);
       }
-      if (bitrate > 1400 && bitrate < 1999){
+      if (bitrate > 1000 && bitrate < 2000){
          received = false;
       }
       else if (bitrate < 600 && received == false){

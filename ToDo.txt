@@ -1,24 +1,22 @@
-Current Issues:
-   Need to allow for delay to reset after X amount of time
-      To get two of the same inputs in a row
-   Sometimes multiple bits will be received
+1. Secure Version - Prevent exfilitration of bits: Random Noise - Delays by Admin
 
-   Sending an entire string, not just one bit at a time
+2. Collect Statistics: Send a random bit pattern of size N and measure the error rate in bits received. 
+   Experiment with different values of N so that we observe a steady bit rate across experiments. 
+   Develop Send and Receive methods.   
+      Sending method places from the sending end buffer into the channel. 
+      Receive method puts the sensed data bit into the receiving end buffer.  
+         Send and Receive method should be scheduled every t time period.  
+         The Receive method should be scheduled after a delay of d (e.g. t/2) 
+            after Send method so that the covert channel mechanism can send and receive bits with minimum errors. 
+   Study the error rate under various conditions of t and d. 
+   Study the efficacy of the covert channel prevention method and redesign the prevention method as needed. 
+   (Some of the methods to be tried are random delay vs constant delay vs distributions to be used to introduce noise into the channel.)
 
-   Able to send 0's and 1's,
-   Prevention would be to introduce more noise: still solid bitrate, and high error rate
-   Prevention would be Tor protocol -> slow
+3. Possibly create a demo with 16 bit input size entered from the keyboard and displayed at the receiving end.   
+      Send set 16 bit user input string (1's and 0's) show same string on receiving end
+      
+WORK ON WRITING THESIS IN PARALLEL
 
-   N Number of Random Bits and Measure Error Rate
-   For Demo, Send set 16 bit user input string (1's and 0's) show same string on receiving end
+Error Correcting Codes are available for reasonable error rates
 
-
-error correcting codes
-
-Seperate Network & Statistics Measurements (Improving the Mean)
-   Stabilized Network, Two Computers (One local, One Remote)
-   Table comparing results -> focus more on benefits of new approaches
-
-Possiblity:
-Prevention Strategy
-Prevention of Data Exfiltration
+Prevention Method for DHT Table would be TOR Protocol -> Slow?
