@@ -1,8 +1,19 @@
 Current Issues:
-   Input 1-0-1-0 ... works fine, want to fully reset after each 1 or 0.
-   Sometimes multiple bits will be received (somewhat fixed?)
+   Need to allow for delay to reset after X amount of time
+      To get two of the same inputs in a row
+   Sometimes multiple bits will be received
 
-Talk to Binto email
+   Sending an entire string, not just one bit at a time
+
+   Able to send 0's and 1's,
+   Prevention would be to introduce more noise: still solid bitrate, and high error rate
+   Prevention would be Tor protocol -> slow
+
+   N Number of Random Bits and Measure Error Rate
+   For Demo, Send set 16 bit user input string (1's and 0's) show same string on receiving end
+
+
+error correcting codes
 
 Seperate Network & Statistics Measurements (Improving the Mean)
    Stabilized Network, Two Computers (One local, One Remote)

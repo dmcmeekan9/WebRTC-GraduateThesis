@@ -13,7 +13,6 @@ var delay;
 var data;
 const dataChannelSend = document.querySelector('textarea#dataChannelSend');
 const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
-const sendButton = document.querySelector('button#sendButton');
 var received;
 
 //var testVideo;
@@ -56,7 +55,6 @@ const hangupButton = document.querySelector('button#hangup');
 getMediaButton.onclick = getMedia;
 connectButton.onclick = createPeerConnection;
 hangupButton.onclick = hangup;
-sendButton.onclick = sendData;
 
 // Establish Peer Connection
 var peerConnectionConfig = {
@@ -199,16 +197,15 @@ function createPeerConnection() {
    );
 }
 
+/******************************************************
 // Implement Delay on Client Side
 // Sense Input based on Bit Rate
 function sendData() {
    data = dataChannelSend.value;
-   console.log('Sent Data: ' + data);
 }
 
 //sendChannel.send(data);
 // Using Data Channels to Send Data
-/******************************************************
 function receiveChannelCallback(event) {
    console.log('Receive Channel Callback');
    receiveChannel = event.channel;
@@ -256,18 +253,21 @@ function drawToCanvas() {
    // Draw Video from Input Canvas
    inputCanvas.drawImage( localVideo, 0, 0, width, height );
 
-   console.log(data);
+   data = dataChannelSend.value;
+   console.log('Sent Data: ' + data);
+
    if (data == 1){
       delayTime = 100;
       data = 100;
-      sendButton.disabled = true;
       setTimeout(pause, 3000);
    }
    else if (data == 0){
       delayTime = 5;
       data = 100;
-      sendButton.disabled = true;
       setTimeout(pause, 3000);
+   }
+   else{
+      clearTimeout(fx);
    }
    delay = setTimeout(fx, delayTime);
    //requestAnimationFrame( drawToCanvas );
@@ -278,7 +278,7 @@ function fx(){
 }
 
 function pause(){
-   sendButton.disabled = false;
+   console.log("test");
 }
 
 // Mozilla API Calls
