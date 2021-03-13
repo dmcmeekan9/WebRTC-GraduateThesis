@@ -1,4 +1,4 @@
-1. Secure Version - Prevent exfilitration of bits: Random Noise - Delays by Admin
+1̶.̶ S̶e̶c̶u̶r̶e̶ V̶e̶r̶s̶i̶o̶n̶ -̶ P̶r̶e̶v̶e̶n̶t̶ e̶x̶f̶i̶l̶i̶t̶r̶a̶t̶i̶o̶n̶ o̶f̶ b̶i̶t̶s̶:̶ R̶a̶n̶d̶o̶m̶ N̶o̶i̶s̶e̶ -̶ D̶e̶l̶a̶y̶s̶ b̶y̶ A̶d̶m̶i̶n̶
 
 2. Collect Statistics: Send a random bit pattern of size N and measure the error rate in bits received. 
    Experiment with different values of N so that we observe a steady bit rate across experiments. 

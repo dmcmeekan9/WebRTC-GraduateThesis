@@ -12,16 +12,22 @@ let receiveChannel;
 var delayTime;
 var delay;
 var data;
+var received;
 const dataChannelSend = document.querySelector('textarea#dataChannelSend');
 const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
-var received;
+
+/**************************************************************** !!!!!!!!!!!!!!!!
+var inputBuffer = new Array(50);
+var outputBuffer = inputBuffer.length;
+var x = 0;
+var i;
+*/
 
 // Image Filtering
 var inputCanvas = document.getElementById('inputCanvas').getContext( '2d' );
 const outputStream = document.getElementById('inputCanvas').captureStream();
 var width = 640;
 var height = 360;
-
 
 // Block Scoped
 let localPeerConnection;
@@ -247,6 +253,10 @@ function drawToCanvas() {
    // Draw Video from Input Canvas
    inputCanvas.drawImage( localVideo, 0, 0, width, height );
 
+   /**************************************************************** !!!!!!!!!!!!!!!! */
+   //setTimeout(input, 50);
+
+   /**************************************************************** !!!!!!!!!!!!!!!! */
    data = dataChannelSend.value;
    console.log('Sent Data: ' + data);
 
@@ -266,7 +276,10 @@ function drawToCanvas() {
 
    // Prevention Method    ********************************** One Area to Try for Testing 
    // Simulates a Consistent Delay on the Sending Side of each Client
-   setTimeout(pause, 500);
+   //setTimeout(pause, 500);
+
+   /***************************************************************** !!!!!!!!!!!!!!!! */
+   //setTimeout(output, 25);
 
    delay = setTimeout(fx, delayTime);
    //requestAnimationFrame( drawToCanvas );
@@ -277,7 +290,16 @@ function fx(){
 }
 
 function pause(){
-   console.log("test");
+   console.log("Paused");
+}
+
+function input(){
+   dataChannelSend.value = inputBuffer[x];
+   x++;
+}
+
+function output(){
+   outputBuffer[x++] = dataChannelReceive.value;
 }
 
 // Mozilla API Calls
@@ -363,6 +385,18 @@ function calcStats(results){
       }
    });
 }
+
+/****************************************************************
+for (i = 0; i < inputBuffer.length; i++){
+   var random = Math.random();
+   if(random > 0.5){
+      inputBuffer.push(1);
+   }
+   if(random < 0.5){
+      inputBuffer.push(0);
+   }
+}
+*/
 
 // Display statistics
 setInterval(() => {
