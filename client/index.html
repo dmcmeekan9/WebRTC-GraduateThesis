@@ -218,13 +218,14 @@
               if (e.preventDefault) e.preventDefault(); //normal browsers
               e.returnValue = false; //IE
             }
+            //onKeyDown="validateInput()" put inside textArea instead of disabled
           }
         </script>
 
         <P>Send 0 for no delay, and 1 for a delay</P>
         <P>Must be connected to send, highlight to change</P>
         <div> 
-          <textarea id = "dataChannelSend" maxlength="1" rows="2" cols="2" onKeyDown="validateInput()"></textarea> 
+          <textarea id = "dataChannelSend" maxlength="1" rows="2" cols="2" disabled></textarea> 
         </div>
 
         <h2>Video to Canvas </h2>
@@ -246,6 +247,7 @@
         <div id="RTT"></div>
         <div id="frames"></div>
         <textarea id = "dataChannelReceive" rows="2" cols="2" disabled></textarea>
+        <div id="errorRate"></div>
       </div>
     </div>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>

@@ -16,12 +16,27 @@ var received;
 const dataChannelSend = document.querySelector('textarea#dataChannelSend');
 const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
 
-/**************************************************************** !!!!!!!!!!!!!!!!
-var inputBuffer = new Array(50);
-var outputBuffer = inputBuffer.length;
-var x = 0;
+/**************************************************************** !!!!!!!!!!!!!!!! */
+let inputBuffer = new Array(5);
+let outputBuffer = new Array(inputBuffer.length);
+var x = 0; // inputBuffer
+var y = 0; // outputBuffer
+var n = 0; // We know one bit has been sent
+var e = 0; // errorRate
+var c = 0; // loop for errorRate
+
 var i;
-*/
+for (i = 0; i < inputBuffer.length; i++){
+   var random = Math.random();
+   if(random > 0.5){
+      inputBuffer[i] = 1;
+   }
+   else if(random < 0.5){
+      inputBuffer[i] = 0;
+   }
+}
+
+/****************************************************************/
 
 // Image Filtering
 var inputCanvas = document.getElementById('inputCanvas').getContext( '2d' );
@@ -45,6 +60,7 @@ const bitrateDiv = document.querySelector('div#bitrate');
 const jitterDiv = document.querySelector('div#jitter');
 const rttDiv = document.querySelector('div#RTT');
 const frameDiv = document.querySelector('div#frames');
+const errorRateDiv = document.querySelector('div#errorRate');
 
 // Formatting Statistics 
 const peerDiv = document.querySelector('div#peer');
@@ -258,16 +274,16 @@ function drawToCanvas() {
 
    /**************************************************************** !!!!!!!!!!!!!!!! */
    data = dataChannelSend.value;
-   console.log('Sent Data: ' + data);
+   //console.log('Sent Data: ' + data);
 
    if (data == 1){
       delayTime = 100;
-      data = 100;
+      //data = 100;
       setTimeout(pause, 3000);
    }
    else if (data == 0){
       delayTime = 5;
-      data = 100;
+      //data = 100;
       setTimeout(pause, 3000);
    }
    else{
@@ -290,16 +306,39 @@ function fx(){
 }
 
 function pause(){
-   console.log("Paused");
+   //console.log("Paused");
 }
 
 function input(){
+   if (x == inputBuffer.length){
+      return;
+   }
    dataChannelSend.value = inputBuffer[x];
+   console.log("inputBuffer: " + inputBuffer[x]);
    x++;
 }
 
 function output(){
-   outputBuffer[x++] = dataChannelReceive.value;
+   outputBuffer[y] = dataChannelReceive.value;
+   if (y == inputBuffer.length){
+      return;
+   }
+   console.log("outputBuffer: " + outputBuffer[y]);
+   y++;
+}
+
+function calcError(){
+   let errorRate;
+   for (c; c < inputBuffer.length; c++){
+      console.log("in loop input: " + inputBuffer[c]);
+      console.log("in loop output: " + outputBuffer[c]);
+      if (inputBuffer[c] != outputBuffer[c]){
+         e++;
+         console.log("e: " + e);
+      }
+   }
+   errorRate = e / inputBuffer.length;
+   errorRateDiv.innerHTML = `<strong>Error Rate: </strong>${errorRate}%`;
 }
 
 // Mozilla API Calls
@@ -335,17 +374,19 @@ function calcStats(results){
          bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
          bitrate = Math.floor(bitrate);
       }
-      if (bitrate > 1000 && bitrate < 2000){
-         received = false;
-      }
-      else if (bitrate < 600 && received == false){
-         received = true;
+      //if (bitrate > 1000 && bitrate < 2000){
+      //   received = false;
+      //}
+      if (bitrate < 600){ // && received == false){
+         //received = true;
          dataChannelReceive.value = 1;
+         n = 1;
          console.log('Received Bit: 1');
       }
-      else if (bitrate > 2000 && received == false){
-         received = true;
+      else if (bitrate > 1700){ // && received == false){
+         //received = true;
          dataChannelReceive.value = 0;
+         n = 1;
          console.log('Received Bit: 0');
       }
       bytesPrev = bytes;
@@ -386,18 +427,6 @@ function calcStats(results){
    });
 }
 
-/****************************************************************
-for (i = 0; i < inputBuffer.length; i++){
-   var random = Math.random();
-   if(random > 0.5){
-      inputBuffer.push(1);
-   }
-   if(random < 0.5){
-      inputBuffer.push(0);
-   }
-}
-*/
-
 // Display statistics
 setInterval(() => {
    if (localPeerConnection && remotePeerConnection) {
@@ -408,3 +437,21 @@ setInterval(() => {
       console.log('Not connected yet');
    }
 }, 1300);
+
+setInterval(() => {
+   if (n = 0){
+      setTimeout(pause, 5000);
+   }
+   if (localPeerConnection && remotePeerConnection){
+      input();
+   }
+}, 5000)
+
+setInterval(() => {
+   if (outputBuffer[inputBuffer.length] != undefined){
+      calcError();
+   }
+   if (n == 1){
+      output();
+   }
+}, 7500);

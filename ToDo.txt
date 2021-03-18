@@ -19,4 +19,17 @@ WORK ON WRITING THESIS IN PARALLEL
 
 Error Correcting Codes are available for reasonable error rates
 
+Network Implementation: Simulating Network Connection
+   Does this alter receiving data?
+   Comparing old prototype -> new prototype: is this possible over a network connection?
+
+
 Prevention Method for DHT Table would be TOR Protocol -> Slow?
+
+1. Automation
+2. Tables and Stats
+3. Network Connection 
+
+inputBuffer: x
+Received Bit: x
+outputBuffer: x
