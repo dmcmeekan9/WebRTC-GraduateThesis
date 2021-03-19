@@ -12,7 +12,7 @@ let receiveChannel;
 var delayTime;
 var delay;
 var data;
-var received;
+var received = false;
 const dataChannelSend = document.querySelector('textarea#dataChannelSend');
 const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
 
@@ -28,12 +28,13 @@ var inputRate = 4000; //input
 var outputRate = inputRate + (inputRate / 2); //output
 var t = inputRate;
 var d = outputRate;
-var statRate = 1500;
+var statRate = 850;
 let multiplyRate = 1;
 var prevIn;
 var currIn;
 var k = 0;
 var p = 0;
+var online;
 
 var i;
 for (i = 0; i < inputBuffer.length; i++){
@@ -384,16 +385,19 @@ function calcStats(results){
          bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
          bitrate = Math.floor(bitrate);
       }
-      //if (bitrate > 1000 && bitrate < 2000){
-      //   received = false;
-      //}
-      if (bitrate < 600){ // && received == false){
-         //received = true;
+      if (bitrate < 600){
+         if (received == false){
+            received = true;
+            return;
+         }
          dataChannelReceive.value = 1;
          console.log('Received Bit: 1');
       }
-      else if (bitrate > 1450){ // && received == false){
-         //received = true;
+      else if (bitrate > 1400){ 
+         if (received == false){
+            received = true;
+            return;
+         }
          dataChannelReceive.value = 0;
          console.log('Received Bit: 0');
       }
@@ -448,14 +452,20 @@ setInterval(() => {
       remotePeerConnection
          .getStats(null)
          .then(calcStats, err => console.log(err));
+      online = true;
    } else {
-      //console.log('Not connected yet');
+      console.log('Not connected yet');
    }
 }, statRate);
 
-setTimeout(pause, 10000);
 
 setInterval(() => {
+   if (online == true){
+      // online
+   }
+   else{
+      return;
+   }
    if (outputBuffer[inputBuffer.length] != undefined){
       return;
    }
@@ -476,10 +486,16 @@ setInterval(() => {
       
    }
    clearInterval();
-   console.log("OUTPUT RATE: " + outputRate);
+   //console.log("OUTPUT RATE: " + outputRate);
 }, outputRate);
 
 setInterval(() => {
+   if (online == true){
+      // online
+   }
+   else{
+      return;
+   }
    prevIn = inputRate;
    //console.log("PREV: " + prevIn);
    inputRate = multiplyRate * t;
@@ -505,7 +521,7 @@ setInterval(() => {
    if (localPeerConnection && remotePeerConnection){
       input();
    }
-   console.log("INPUT RATE: " + inputRate);
+   //console.log("INPUT RATE: " + inputRate);
    clearInterval();
 }, inputRate)
 
