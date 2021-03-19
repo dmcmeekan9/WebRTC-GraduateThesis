@@ -21,15 +21,19 @@ let inputBuffer = new Array(5);
 let outputBuffer = new Array(inputBuffer.length);
 var x = 0; // inputBuffer
 var y = 0; // outputBuffer
-var n = 0; // We know one bit has been sent
+var w = 0; // We know one bit has been sent
 var e = 0; // errorRate
 var c = 0; // loop for errorRate
-var inputRate = 5000; //input
+var inputRate = 4000; //input
 var outputRate = inputRate + (inputRate / 2); //output
 var t = inputRate;
 var d = outputRate;
 var statRate = 1500;
-var multiplyRate = 1;
+let multiplyRate = 1;
+var prevIn;
+var currIn;
+var k = 0;
+var p = 0;
 
 var i;
 for (i = 0; i < inputBuffer.length; i++){
@@ -315,7 +319,7 @@ function pause(){
    //console.log("Paused");
 }
 
-function input(){
+function input(){ 
    if (x == inputBuffer.length){
       return;
    }
@@ -433,45 +437,24 @@ function calcStats(results){
 
 // Display statistics
 setInterval(() => {
+   /*
+   let n = 0;
    if (n = 0){
       setTimeout(pause, 10000);
+      n = 1;
    }
+   */
    if (localPeerConnection && remotePeerConnection) {
       remotePeerConnection
          .getStats(null)
          .then(calcStats, err => console.log(err));
    } else {
-      console.log('Not connected yet');
+      //console.log('Not connected yet');
    }
 }, statRate);
 
-setInterval(() => {
-   if (outputBuffer[inputBuffer.length] != undefined){
-      calcError();
-      return;
-   }
-   if (n = 1){
-      multiplyRate++;
-   }
-   n = 1;
-   if (localPeerConnection && remotePeerConnection){
-      input();
-   }
-   console.log("INPUT RATE: " + inputRate);
-   setInterval(() => {
-      if (outputBuffer[inputBuffer.length] != undefined){
-         return;
-      }
-      if (localPeerConnection && remotePeerConnection){
-         output();
-      }
-      console.log("OUTPUT RATE: " + outputRate);
-      outputRate += t;
-   }, outputRate);
-   inputRate = multiplyRate * t;
-}, inputRate)
+setTimeout(pause, 10000);
 
-/*
 setInterval(() => {
    if (outputBuffer[inputBuffer.length] != undefined){
       return;
@@ -479,7 +462,51 @@ setInterval(() => {
    if (localPeerConnection && remotePeerConnection){
       output();
    }
+   if (w == 0){
+      setTimeout(pause, 0);
+      multiplyRate++;
+      prevIn = inputRate;
+      inputRate = multiplyRate * t;
+      currIn = inputRate;
+      w++;
+   }
+   else {
+      multiplyRate++;
+      outputRate += t;
+      
+   }
+   clearInterval();
    console.log("OUTPUT RATE: " + outputRate);
-   outputRate += t;
 }, outputRate);
-*/
+
+setInterval(() => {
+   prevIn = inputRate;
+   //console.log("PREV: " + prevIn);
+   inputRate = multiplyRate * t;
+   currIn = inputRate;
+   //console.log("CURR: " + currIn);
+   //console.log(multiplyRate);
+   if (p == 0){
+      p++;
+   }
+   else if (currIn == prevIn){
+      if (p == 1){
+         p++;
+      }
+      else{
+         //console.log("SKIPPED");
+         return;
+      }
+   }
+   if (outputBuffer[inputBuffer.length] != undefined){
+      calcError();
+      return;
+   }
+   if (localPeerConnection && remotePeerConnection){
+      input();
+   }
+   console.log("INPUT RATE: " + inputRate);
+   clearInterval();
+}, inputRate)
+
+
