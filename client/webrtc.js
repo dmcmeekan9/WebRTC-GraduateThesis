@@ -16,25 +16,27 @@ var received = false;
 const dataChannelSend = document.querySelector('textarea#dataChannelSend');
 const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
 
-/**************************************************************** !!!!!!!!!!!!!!!! */
-let inputBuffer = new Array(5);
-let outputBuffer = new Array(inputBuffer.length);
-var x = 0; // inputBuffer
-var y = 0; // outputBuffer
-var w = 0; // We know one bit has been sent
-var e = 0; // errorRate
-var c = 0; // loop for errorRate
-var inputRate = 4000; //input
-var outputRate = inputRate + (inputRate / 2); //output
-var t = inputRate;
-var d = outputRate;
-var statRate = 850;
-let multiplyRate = 1;
-var prevIn;
-var currIn;
-var k = 0;
-var p = 0;
-var online;
+/*****************************************************************/
+let inputBuffer = new Array(5);                          // Size of Input Buffer
+let outputBuffer = new Array(inputBuffer.length);        // Output Match Input
+
+var x = 0;                                               // inputBuffer
+var y = 0;                                               // outputBuffer
+var firstSet = 0;                                        // firstSet of Input & Output Rates
+var e = 0;                                               // error Count
+var c = 0;                                               // Count when Calculating Error
+
+var inputRate = 4000;                                    // Beginning Input Rate
+
+var outputRate = inputRate + (inputRate / 2);            // Beginning Output Rate
+var t = inputRate;                                       // Input Rate Variable
+var statRate = 850;                                      // statRate
+let multiplyRate = 1;                                    // Increment Rate
+var prevIn;                                              // Previous Input Rate
+var currIn;                                              // Current Input Rate 
+var current = 0;                                         // Determing Current Input Rate
+var online;                                              // Connection is Online/Offline
+var inputOccured;                                        // Input Has Begun
 
 var i;
 for (i = 0; i < inputBuffer.length; i++){
@@ -72,6 +74,9 @@ const jitterDiv = document.querySelector('div#jitter');
 const rttDiv = document.querySelector('div#RTT');
 const frameDiv = document.querySelector('div#frames');
 const errorRateDiv = document.querySelector('div#errorRate');
+const inputBufferDiv = document.querySelector('div#inputBuffer');
+inputBufferDiv.innerHTML = `Sending/Receiving <strong>${inputBuffer.length}</strong> bits`;
+                                                         // Sending X Number of Bits
 
 // Formatting Statistics 
 const peerDiv = document.querySelector('div#peer');
@@ -224,77 +229,20 @@ function createPeerConnection() {
    );
 }
 
-/******************************************************
-// Implement Delay on Client Side
-// Sense Input based on Bit Rate
-function sendData() {
-   data = dataChannelSend.value;
-}
-
-//sendChannel.send(data);
-// Using Data Channels to Send Data
-function receiveChannelCallback(event) {
-   console.log('Receive Channel Callback');
-   receiveChannel = event.channel;
-   receiveChannel.onmessage = onReceiveMessageCallback;
-}
-function onReceiveMessageCallback(event) {
-   dataChannelReceive.value = event.data;
-   console.log('Received Message: ' + dataChannelReceive.value);
-}
-function onSendChannelStateChange() {
-   const readyState = sendChannel.readyState;
-   console.log('Send channel state is: ' + readyState);
-   if (readyState === 'open') {
-      dataChannelSend.disabled = false;
-      dataChannelSend.focus();
-      sendButton.disabled = false;
-   } else {
-      dataChannelSend.disabled = true;
-      sendButton.disabled = true;
-   }
-}
-function onReceiveChannelStateChange() {
-   const readyState = receiveChannel.readyState;
-   console.log(`Receive channel state is: ${readyState}`);
-}
-
-Acquiring Pixel Data from Input Canvas
-var pixelData = inputCanvas.getImageData( 0, 0, width, height );
-var data = pixelData.data;
-var i;
-// Data Transformation - Grey
-for( i = 0; i < data.length; i += 4 ) {
-   var transform = (data[i] + data[i + 1] + data[i + 2]) * random;
-
-   data[ i ] = transform;
-   data[ i + 1 ] = transform;
-   data[ i + 2 ] = transform;
-}
-// Output data to Output Canvas
-outputCanvas.putImageData( pixelData, 0, 0 );
-**********************************************************/
-
 // Draw to Canvas (Possible Pixel Manipulation)
 function drawToCanvas() {
    // Draw Video from Input Canvas
    inputCanvas.drawImage( localVideo, 0, 0, width, height );
 
-   /**************************************************************** !!!!!!!!!!!!!!!! */
-   //setTimeout(input, 50);
-
-   /**************************************************************** !!!!!!!!!!!!!!!! */
    data = dataChannelSend.value;
    //console.log('Sent Data: ' + data);
 
    if (data == 1){
       delayTime = 100;
-      //data = 100;
       setTimeout(pause, 3000);
    }
    else if (data == 0){
       delayTime = 5;
-      //data = 100;
       setTimeout(pause, 3000);
    }
    else{
@@ -305,14 +253,10 @@ function drawToCanvas() {
    // Simulates a Consistent Delay on the Sending Side of each Client
    //setTimeout(pause, 500);
 
-   /***************************************************************** !!!!!!!!!!!!!!!! */
-   //setTimeout(output, 25);
-
-   delay = setTimeout(fx, delayTime);
-   //requestAnimationFrame( drawToCanvas );
+   delay = setTimeout(drawDelay, delayTime);
 }
 
-function fx(){
+function drawDelay(){
    requestAnimationFrame( drawToCanvas );
 }
 
@@ -338,6 +282,7 @@ function output(){
    y++;
 }
 
+// Calc Error when Output Buffer is Full
 function calcError(){
    let errorRate;
    for (c; c < inputBuffer.length; c++){
@@ -345,11 +290,15 @@ function calcError(){
       console.log("in loop output: " + outputBuffer[c]);
       if (inputBuffer[c] != outputBuffer[c]){
          e++;
-         console.log("e: " + e);
+         console.log("Error Count: " + e);
+      }
+      else if (outputBuffer[c] == null || outputBuffer[c] == ""){
+         e++;
+         console.log("Error Count: " + e);
       }
    }
    errorRate = e / inputBuffer.length;
-   errorRateDiv.innerHTML = `<strong>Error Rate: </strong>${errorRate}%`;
+   errorRateDiv.innerHTML = `<strong>Error Rate: </strong>${errorRate.toFixed(2)}%`;
 }
 
 // Mozilla API Calls
@@ -391,7 +340,7 @@ function calcStats(results){
             return;
          }
          dataChannelReceive.value = 1;
-         console.log('Received Bit: 1');
+         //console.log('Received Bit: 1');
       }
       else if (bitrate > 1400){ 
          if (received == false){
@@ -399,7 +348,7 @@ function calcStats(results){
             return;
          }
          dataChannelReceive.value = 0;
-         console.log('Received Bit: 0');
+         //console.log('Received Bit: 0');
       }
       bytesPrev = bytes;
       timestampPrev = now;
@@ -441,13 +390,6 @@ function calcStats(results){
 
 // Display statistics
 setInterval(() => {
-   /*
-   let n = 0;
-   if (n = 0){
-      setTimeout(pause, 10000);
-      n = 1;
-   }
-   */
    if (localPeerConnection && remotePeerConnection) {
       remotePeerConnection
          .getStats(null)
@@ -460,8 +402,8 @@ setInterval(() => {
 
 
 setInterval(() => {
-   if (online == true){
-      // online
+   if (online == true && inputOccured == true){
+      //online and input has occured
    }
    else{
       return;
@@ -472,13 +414,13 @@ setInterval(() => {
    if (localPeerConnection && remotePeerConnection){
       output();
    }
-   if (w == 0){
+   if (firstSet == 0){
       setTimeout(pause, 0);
       multiplyRate++;
       prevIn = inputRate;
       inputRate = multiplyRate * t;
       currIn = inputRate;
-      w++;
+      firstSet++;
    }
    else {
       multiplyRate++;
@@ -491,7 +433,7 @@ setInterval(() => {
 
 setInterval(() => {
    if (online == true){
-      // online
+      inputOccured = true;
    }
    else{
       return;
@@ -501,13 +443,12 @@ setInterval(() => {
    inputRate = multiplyRate * t;
    currIn = inputRate;
    //console.log("CURR: " + currIn);
-   //console.log(multiplyRate);
-   if (p == 0){
-      p++;
+   if (current == 0){
+      current++;
    }
    else if (currIn == prevIn){
-      if (p == 1){
-         p++;
+      if (current == 1){
+         current++;
       }
       else{
          //console.log("SKIPPED");

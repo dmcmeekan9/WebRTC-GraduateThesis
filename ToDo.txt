@@ -26,10 +26,8 @@ Network Implementation: Simulating Network Connection
 
 Prevention Method for DHT Table would be TOR Protocol -> Slow?
 
-1. Automation
+1̶.̶ A̶u̶t̶o̶m̶a̶t̶i̶o̶n̶ - Clean up code
 2. Tables and Stats
-3. Network Connection 
-
-inputBuffer: x
-Received Bit: x
-outputBuffer: x
+3. Network Connection
+   Covert Channel Bandwith
+   Error Rate
