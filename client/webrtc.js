@@ -16,6 +16,13 @@ var received = false;
 const dataChannelSend = document.querySelector('textarea#dataChannelSend');
 const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
 
+var randomDelay;                                         //Prevention Method
+
+let bitrate;
+let jitter;
+let RTT;
+let framesPer;
+
 /*****************************************************************/
 let inputBuffer = new Array(5);                          // Size of Input Buffer
 let outputBuffer = new Array(inputBuffer.length);        // Output Match Input
@@ -38,8 +45,13 @@ var current = 0;                                         // Determing Current In
 var online;                                              // Connection is Online/Offline
 var inputOccured;                                        // Input Has Begun
 
+var ccBandwidth = (1/t) * 1000;                          // Covert Channel Bandwidth
+// The number of bits the covert channel can send per second
+
 var i;
 for (i = 0; i < inputBuffer.length; i++){
+   //inputBuffer[i] = 1;
+   //*/
    var random = Math.random();
    if(random > 0.5){
       inputBuffer[i] = 1;
@@ -47,6 +59,7 @@ for (i = 0; i < inputBuffer.length; i++){
    else if(random < 0.5){
       inputBuffer[i] = 0;
    }
+   //*/
 }
 
 /****************************************************************/
@@ -68,13 +81,15 @@ let timestampPrev;
 // Format Get User Media
 const getUserMediaConstraintsDiv = document.querySelector('div#getUserMediaConstraints');
 
-// Display Bitrate, Jitter, RTT, and BitPattern
+// Display Bitrate, Jitter, RTT, BitPattern, Error Rate, inputBuffer length, and //////////////COVERT CHANNEL BANDWITH???
 const bitrateDiv = document.querySelector('div#bitrate');
 const jitterDiv = document.querySelector('div#jitter');
 const rttDiv = document.querySelector('div#RTT');
 const frameDiv = document.querySelector('div#frames');
 const errorRateDiv = document.querySelector('div#errorRate');
 const inputBufferDiv = document.querySelector('div#inputBuffer');
+const ccBandwidthDiv = document.querySelector('div#ccBandwidth');
+ccBandwidthDiv.innerHTML = `<strong>Covert Channel Bandwidth: </strong>${ccBandwidth}`;
 inputBufferDiv.innerHTML = `Sending/Receiving <strong>${inputBuffer.length}</strong> bits`;
                                                          // Sending X Number of Bits
 
@@ -229,6 +244,19 @@ function createPeerConnection() {
    );
 }
 
+function preventionMethod(){
+   //if (bitrate > 1000){
+      // Works to prevent 0's
+      //randomDelay = Math.floor(Math.random() * 15000000) + 7500000;   
+   //}
+   //else {
+      // Works to prevent 1's
+      randomDelay = Math.floor(Math.random() * 10000) + 1000;
+   //}
+   //console.log(randomDelay);
+   //setTimeout(randomDelay);
+}
+
 // Draw to Canvas (Possible Pixel Manipulation)
 function drawToCanvas() {
    // Draw Video from Input Canvas
@@ -249,9 +277,9 @@ function drawToCanvas() {
       clearTimeout(fx);
    }
 
-   // Prevention Method    ********************************** One Area to Try for Testing 
+   // Prevention Method    **********************************
    // Simulates a Consistent Delay on the Sending Side of each Client
-   //setTimeout(pause, 500);
+   //setTimeout(pause, randomDelay);
 
    delay = setTimeout(drawDelay, delayTime);
 }
@@ -264,11 +292,12 @@ function pause(){
    //console.log("Paused");
 }
 
-function input(){ 
+function input(){
    if (x == inputBuffer.length){
       return;
    }
    dataChannelSend.value = inputBuffer[x];
+   console.log(randomDelay);
    console.log("inputBuffer: " + inputBuffer[x]);
    x++;
 }
@@ -278,6 +307,7 @@ function output(){
    if (y == inputBuffer.length){
       return;
    }
+   console.log(randomDelay);
    console.log("outputBuffer: " + outputBuffer[y]);
    y++;
 }
@@ -297,8 +327,9 @@ function calcError(){
          console.log("Error Count: " + e);
       }
    }
-   errorRate = e / inputBuffer.length;
-   errorRateDiv.innerHTML = `<strong>Error Rate: </strong>${errorRate.toFixed(2)}%`;
+   errorRate = (e / inputBuffer.length) * 100;
+   //error.toFixed(2) below for 2 decimal places
+   errorRateDiv.innerHTML = `<strong>Error Rate: </strong>${errorRate}%`;
 }
 
 // Mozilla API Calls
@@ -321,11 +352,6 @@ function calcStats(results){
    results.forEach(report => {
       const now = report.timestamp;
 
-      let bitrate;
-      let jitter;
-      let RTT;
-      let framesPer;
-
       // Bitrate caluclated by using Incoming RTP Connection
       if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
          const bytes = report.bytesReceived;
@@ -334,7 +360,7 @@ function calcStats(results){
          bitrate = 8 * (bytes - bytesPrev) / (now - timestampPrev);
          bitrate = Math.floor(bitrate);
       }
-      if (bitrate < 600){
+      if (bitrate < 500){
          if (received == false){
             received = true;
             return;
@@ -342,7 +368,7 @@ function calcStats(results){
          dataChannelReceive.value = 1;
          //console.log('Received Bit: 1');
       }
-      else if (bitrate > 1400){ 
+      else if (bitrate > 1600){ 
          if (received == false){
             received = true;
             return;
@@ -370,20 +396,20 @@ function calcStats(results){
       }
 
       if (bitrate) {
-         bitrate += ' kbits/sec';
-         bitrateDiv.innerHTML = `<strong>Bitrate: </strong>${bitrate}`;
+         //bitrate += ' kbits/sec';
+         bitrateDiv.innerHTML = `<strong>Bitrate: </strong>${bitrate} kbits/sec`;
       }
       if (framesPer) {
-         framesPer += ' frames/sec';
-         frameDiv.innerHTML = `<strong>Framerate: </strong>${framesPer}`;
+         //framesPer += ' frames/sec';
+         frameDiv.innerHTML = `<strong>Framerate: </strong>${framesPer} frames/sec`;
       }
       if (jitter) {
-         jitter += ' milliseconds';
-         jitterDiv.innerHTML = `<strong>Jitter: </strong>${jitter}`;
+         //jitter += ' milliseconds';
+         jitterDiv.innerHTML = `<strong>Jitter: </strong>${jitter} milliseconds`;
       }
       if (RTT) {
-         RTT += ' milliseconds';
-         rttDiv.innerHTML = `<strong>Total Round Trip Time: </strong>${RTT}`;
+         //RTT += ' milliseconds';
+         rttDiv.innerHTML = `<strong>Total Round Trip Time: </strong>${RTT} milliseconds`;
       }
    });
 }
@@ -466,4 +492,8 @@ setInterval(() => {
    clearInterval();
 }, inputRate)
 
-
+/*
+setInterval(() => {
+   preventionMethod();
+}, 10)
+*/

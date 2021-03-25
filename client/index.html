@@ -201,13 +201,13 @@
       <div class="centered local">
         <video id="localVideo" playsinline autoplay muted width="640" height="360"></video>
         <h2>Local Video</h2>
-        <p>Click below to start local video, and await connection by a peer</p>
         <div>
           <button id="getMedia">Get Media</button>
           <button id="connect" disabled>Connect</button>
           <button id="hangup" disabled>Hang Up</button>
         </div>
 
+        <!--
         <script>
           function validateInput() {
             var e = event || window.event;  // get event object
@@ -221,9 +221,10 @@
             //onKeyDown="validateInput()" put inside textArea instead of disabled
           }
         </script>
+      -->
 
-        <P>Get Media -> Connect</P>
-        <P>Hangup to End Call</P>
+        <P><Strong>Get Media</Strong> -> <Strong>Connect</Strong> to start call</P>
+        <P><Strong>Hangup</Strong> to End Call</P>
         <div id="inputBuffer"></div>
         <P></P>
         <div> 
@@ -249,6 +250,7 @@
         <div id="RTT"></div>
         <div id="frames"></div>
         <textarea id = "dataChannelReceive" rows="2" cols="2" disabled></textarea>
+        <div id="ccBandwidth"></div>
         <div id="errorRate"></div>
       </div>
     </div>

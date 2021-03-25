@@ -26,8 +26,15 @@ Network Implementation: Simulating Network Connection
 
 Prevention Method for DHT Table would be TOR Protocol -> Slow?
 
-1̶.̶ A̶u̶t̶o̶m̶a̶t̶i̶o̶n̶ - Clean up code
+Prevention Method:
+   Doesn't work when taking both 0 and 1's,
+      works when only 1 input value
+
 2. Tables and Stats
+   Covert Channel Bandwidth -> 1/t
+      Decreases as t increases
+      Observer error rates for various values of t
+   Video Quality
+      Framerate for various values of t
+
 3. Network Connection
-   Covert Channel Bandwith
-   Error Rate
