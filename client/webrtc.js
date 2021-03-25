@@ -37,7 +37,7 @@ var inputRate = 4000;                                    // Beginning Input Rate
 
 var outputRate = inputRate + (inputRate / 2);            // Beginning Output Rate
 var t = inputRate;                                       // Input Rate Variable
-var statRate = 850;                                      // statRate
+var statRate = 850;                                      // statRate 
 let multiplyRate = 1;                                    // Increment Rate
 var prevIn;                                              // Previous Input Rate
 var currIn;                                              // Current Input Rate 
