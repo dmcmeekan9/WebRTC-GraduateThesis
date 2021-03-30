@@ -426,7 +426,7 @@ setInterval(() => {
    }
 }, statRate);
 
-
+/*
 setInterval(() => {
    if (online == true && inputOccured == true){
       //online and input has occured

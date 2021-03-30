@@ -1,21 +1,20 @@
 1̶.̶ S̶e̶c̶u̶r̶e̶ V̶e̶r̶s̶i̶o̶n̶ -̶ P̶r̶e̶v̶e̶n̶t̶ e̶x̶f̶i̶l̶i̶t̶r̶a̶t̶i̶o̶n̶ o̶f̶ b̶i̶t̶s̶:̶ R̶a̶n̶d̶o̶m̶ N̶o̶i̶s̶e̶ -̶ D̶e̶l̶a̶y̶s̶ b̶y̶ A̶d̶m̶i̶n̶
 
-2. Collect Statistics: Send a random bit pattern of size N and measure the error rate in bits received. 
-   Experiment with different values of N so that we observe a steady bit rate across experiments. 
-   Develop Send and Receive methods.   
-      Sending method places from the sending end buffer into the channel. 
-      Receive method puts the sensed data bit into the receiving end buffer.  
-         Send and Receive method should be scheduled every t time period.  
-         The Receive method should be scheduled after a delay of d (e.g. t/2) 
-            after Send method so that the covert channel mechanism can send and receive bits with minimum errors. 
-   Study the error rate under various conditions of t and d. 
+2̶.̶ C̶o̶l̶l̶e̶c̶t̶ S̶t̶a̶t̶i̶s̶t̶i̶c̶s̶:̶ S̶e̶n̶d̶ a̶ r̶a̶n̶d̶o̶m̶ b̶i̶t̶ p̶a̶t̶t̶e̶r̶n̶ o̶f̶ s̶i̶z̶e̶ N̶ a̶n̶d̶ m̶e̶a̶s̶u̶r̶e̶ t̶h̶e̶ e̶r̶r̶o̶r̶ r̶a̶t̶e̶ i̶n̶ b̶i̶t̶s̶ r̶e̶c̶e̶i̶v̶e̶d̶.̶ 
+   E̶x̶p̶e̶r̶i̶m̶e̶n̶t̶ w̶i̶t̶h̶ d̶i̶f̶f̶e̶r̶e̶n̶t̶ v̶a̶l̶u̶e̶s̶ o̶f̶ N̶ s̶o̶ t̶h̶a̶t̶ w̶e̶ o̶b̶s̶e̶r̶v̶e̶ a̶ s̶t̶e̶a̶d̶y̶ b̶i̶t̶ r̶a̶t̶e̶ a̶c̶r̶o̶s̶s̶ e̶x̶p̶e̶r̶i̶m̶e̶n̶t̶s̶.̶ 
+   D̶e̶v̶e̶l̶o̶p̶ S̶e̶n̶d̶ a̶n̶d̶ R̶e̶c̶e̶i̶v̶e̶ m̶e̶t̶h̶o̶d̶s̶.̶   
+      S̶e̶n̶d̶i̶n̶g̶ m̶e̶t̶h̶o̶d̶ p̶l̶a̶c̶e̶s̶ f̶r̶o̶m̶ t̶h̶e̶ s̶e̶n̶d̶i̶n̶g̶ e̶n̶d̶ b̶u̶f̶f̶e̶r̶ i̶n̶t̶o̶ t̶h̶e̶ c̶h̶a̶n̶n̶e̶l̶.̶ 
+      R̶e̶c̶e̶i̶v̶e̶ m̶e̶t̶h̶o̶d̶ p̶u̶t̶s̶ t̶h̶e̶ s̶e̶n̶s̶e̶d̶ d̶a̶t̶a̶ b̶i̶t̶ i̶n̶t̶o̶ t̶h̶e̶ r̶e̶c̶e̶i̶v̶i̶n̶g̶ e̶n̶d̶ b̶u̶f̶f̶e̶r̶.̶  
+         S̶e̶n̶d̶ a̶n̶d̶ R̶e̶c̶e̶i̶v̶e̶ m̶e̶t̶h̶o̶d̶ s̶h̶o̶u̶l̶d̶ b̶e̶ s̶c̶h̶e̶d̶u̶l̶e̶d̶ e̶v̶e̶r̶y̶ t̶ t̶i̶m̶e̶ p̶e̶r̶i̶o̶d̶.̶  
+         T̶h̶e̶ R̶e̶c̶e̶i̶v̶e̶ m̶e̶t̶h̶o̶d̶ s̶h̶o̶u̶l̶d̶ b̶e̶ s̶c̶h̶e̶d̶u̶l̶e̶d̶ a̶f̶t̶e̶r̶ a̶ d̶e̶l̶a̶y̶ o̶f̶ d̶ (̶e̶.̶g̶.̶ t̶/̶2̶)̶ 
+            a̶f̶t̶e̶r̶ S̶e̶n̶d̶ m̶e̶t̶h̶o̶d̶ s̶o̶ t̶h̶a̶t̶ t̶h̶e̶ c̶o̶v̶e̶r̶t̶ c̶h̶a̶n̶n̶e̶l̶ m̶e̶c̶h̶a̶n̶i̶s̶m̶ c̶a̶n̶ s̶e̶n̶d̶ a̶n̶d̶ r̶e̶c̶e̶i̶v̶e̶ b̶i̶t̶s̶ w̶i̶t̶h̶ m̶i̶n̶i̶m̶u̶m̶ e̶r̶r̶o̶r̶s̶.̶ 
+   S̶t̶u̶d̶y̶ t̶h̶e̶ e̶r̶r̶o̶r̶ r̶a̶t̶e̶ u̶n̶d̶e̶r̶ v̶a̶r̶i̶o̶u̶s̶ c̶o̶n̶d̶i̶t̶i̶o̶n̶s̶ o̶f̶ t̶ a̶n̶d̶ d̶.̶ 
+
    Study the efficacy of the covert channel prevention method and redesign the prevention method as needed. 
    (Some of the methods to be tried are random delay vs constant delay vs distributions to be used to introduce noise into the channel.)
 
 3. Possibly create a demo with 16 bit input size entered from the keyboard and displayed at the receiving end.   
       Send set 16 bit user input string (1's and 0's) show same string on receiving end
-      
-WORK ON WRITING THESIS IN PARALLEL
 
 Error Correcting Codes are available for reasonable error rates
 
@@ -23,18 +22,59 @@ Network Implementation: Simulating Network Connection
    Does this alter receiving data?
    Comparing old prototype -> new prototype: is this possible over a network connection?
 
-
 Prevention Method for DHT Table would be TOR Protocol -> Slow?
 
 Prevention Method:
    Doesn't work when taking both 0 and 1's,
       works when only 1 input value
 
-2. Tables and Stats
-   Covert Channel Bandwidth -> 1/t
-      Decreases as t increases
-      Observer error rates for various values of t
-   Video Quality
-      Framerate for various values of t
+2̶.̶ T̶a̶b̶l̶e̶s̶ a̶n̶d̶ S̶t̶a̶t̶s̶
+   C̶o̶v̶e̶r̶t̶ C̶h̶a̶n̶n̶e̶l̶ B̶a̶n̶d̶w̶i̶d̶t̶h̶ -̶>̶ 1̶/̶t̶
+      D̶e̶c̶r̶e̶a̶s̶e̶s̶ a̶s̶ t̶ i̶n̶c̶r̶e̶a̶s̶e̶s̶
+      O̶b̶s̶e̶r̶v̶e̶r̶ e̶r̶r̶o̶r̶ r̶a̶t̶e̶s̶ f̶o̶r̶ v̶a̶r̶i̶o̶u̶s̶ v̶a̶l̶u̶e̶s̶ o̶f̶ t̶
+   V̶i̶d̶e̶o̶ Q̶u̶a̶l̶i̶t̶y̶
+      F̶r̶a̶m̶e̶r̶a̶t̶e̶ f̶o̶r̶ v̶a̶r̶i̶o̶u̶s̶ v̶a̶l̶u̶e̶s̶ o̶f̶ t̶
 
 3. Network Connection
+
+video quality depends on what is being sent and received
+error rate vs covert channel 
+
+Writing Center
+
+Future Work:
+   Matching audio delay with video
+   Network Connection
+      2 Clients on Seperate Networks communicating through Server
+
+Only use Average
+Error Rate generally decreased when the video being sent was fulfilled with sufficient media ..
+believe this is because it was much more stable and compression wasn't taking place as extreme with
+a black screen.
+Same with Framerate
+
+b̶a̶s̶e̶l̶i̶n̶e̶ s̶t̶a̶t̶s̶:̶
+1̶0̶ t̶e̶s̶t̶s̶:̶
+5̶ w̶i̶t̶h̶ b̶l̶a̶c̶k̶ s̶c̶r̶e̶e̶n̶ t̶e̶s̶t̶i̶n̶g̶
+5̶ w̶i̶t̶h̶ "̶s̶a̶m̶p̶l̶e̶ p̶r̶e̶s̶e̶n̶t̶a̶t̶i̶o̶n̶"̶ v̶i̶d̶e̶o̶ e̶l̶e̶m̶e̶n̶t̶
+
+d̶e̶l̶a̶y̶ s̶t̶a̶t̶s̶:̶
+1̶0̶ t̶e̶s̶t̶s̶:̶
+5̶ w̶i̶t̶h̶ b̶l̶a̶c̶k̶ s̶c̶r̶e̶e̶n̶ t̶e̶s̶t̶i̶n̶g̶
+5̶ w̶i̶t̶h̶ "̶s̶a̶m̶p̶l̶e̶ p̶r̶e̶s̶e̶n̶t̶a̶t̶i̶o̶n̶"̶ v̶i̶d̶e̶o̶ e̶l̶e̶m̶e̶n̶t̶
+
+prevention method constant:
+10 tests:
+5 with black screen testing
+5 with "sample presentation" video element
+
+prevention method random:
+10 tests:
+5 with black screen testing
+5 with "sample presentation" video element
+
+Don't use bitrate, to simulate no knowledge to admin
+
+As an admin, if drastic bitrates are occuring
+can implement delays 
+
