@@ -17,6 +17,8 @@ const dataChannelSend = document.querySelector('textarea#dataChannelSend');
 const dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
 
 var randomDelay;                                         //Prevention Method
+var start;
+var end;
 
 let bitrate;
 let jitter;
@@ -33,7 +35,7 @@ var firstSet = 0;                                        // firstSet of Input & 
 var e = 0;                                               // error Count
 var c = 0;                                               // Count when Calculating Error
 
-var inputRate = 4000;                                    // Beginning Input Rate
+var inputRate = 7000;                                    // Beginning Input Rate
 
 var outputRate = inputRate + (inputRate / 2);            // Beginning Output Rate
 var t = inputRate;                                       // Input Rate Variable
@@ -59,6 +61,7 @@ for (i = 0; i < inputBuffer.length; i++){
    else if(random < 0.5){
       inputBuffer[i] = 0;
    }
+   inputBuffer[0] = 0;
    //*/
 }
 
@@ -151,6 +154,7 @@ function getUserMediaSuccess(stream) {
    localStream = stream;
    localVideo.srcObject = stream;
 
+   preventionMethod();
    drawToCanvas();
 }
 
@@ -193,14 +197,9 @@ function createPeerConnection() {
    localPeerConnection = new RTCPeerConnection(null);
    remotePeerConnection = new RTCPeerConnection(null);
 
-
    // Acquire the outputCanvas's Video Stream, which will then be brought into the Remote Stream
    localStream = outputStream; 
    localStream.getTracks().forEach(track => localPeerConnection.addTrack(track, localStream));
-
-   // Prevention Method       ********************************** One Area to Try for Testing
-   // Simulates a Consistent Delay on the Server Side
-   //setTimeout(pause, 500);
 
    console.log('localPeerConnection creating offer');
    localPeerConnection.onnegotiationeeded = () => console.log('Negotiation needed - localPeerConnection');
@@ -245,16 +244,7 @@ function createPeerConnection() {
 }
 
 function preventionMethod(){
-   //if (bitrate > 1000){
-      // Works to prevent 0's
-      //randomDelay = Math.floor(Math.random() * 15000000) + 7500000;   
-   //}
-   //else {
-      // Works to prevent 1's
-      randomDelay = Math.floor(Math.random() * 10000) + 1000;
-   //}
-   //console.log(randomDelay);
-   //setTimeout(randomDelay);
+   randomDelay = Math.floor(Math.random() * 100000000) + 10000000;
 }
 
 // Draw to Canvas (Possible Pixel Manipulation)
@@ -263,7 +253,6 @@ function drawToCanvas() {
    inputCanvas.drawImage( localVideo, 0, 0, width, height );
 
    data = dataChannelSend.value;
-   //console.log('Sent Data: ' + data);
 
    if (data == 1){
       delayTime = 100;
@@ -276,10 +265,6 @@ function drawToCanvas() {
    else{
       clearTimeout(fx);
    }
-
-   // Prevention Method    **********************************
-   // Simulates a Consistent Delay on the Sending Side of each Client
-   //setTimeout(pause, randomDelay);
 
    delay = setTimeout(drawDelay, delayTime);
 }
@@ -297,7 +282,6 @@ function input(){
       return;
    }
    dataChannelSend.value = inputBuffer[x];
-   console.log(randomDelay);
    console.log("inputBuffer: " + inputBuffer[x]);
    x++;
 }
@@ -307,7 +291,7 @@ function output(){
    if (y == inputBuffer.length){
       return;
    }
-   console.log(randomDelay);
+   console.log("Delay: " + randomDelay);
    console.log("outputBuffer: " + outputBuffer[y]);
    y++;
 }
@@ -328,7 +312,6 @@ function calcError(){
       }
    }
    errorRate = (e / inputBuffer.length) * 100;
-   //error.toFixed(2) below for 2 decimal places
    errorRateDiv.innerHTML = `<strong>Error Rate: </strong>${errorRate}%`;
 }
 
@@ -368,7 +351,7 @@ function calcStats(results){
          dataChannelReceive.value = 1;
          //console.log('Received Bit: 1');
       }
-      else if (bitrate > 1600){ 
+      else if (bitrate > 1700){ 
          if (received == false){
             received = true;
             return;
@@ -426,7 +409,6 @@ setInterval(() => {
    }
 }, statRate);
 
-/*
 setInterval(() => {
    if (online == true && inputOccured == true){
       //online and input has occured
@@ -454,7 +436,6 @@ setInterval(() => {
       
    }
    clearInterval();
-   //console.log("OUTPUT RATE: " + outputRate);
 }, outputRate);
 
 setInterval(() => {
@@ -465,10 +446,8 @@ setInterval(() => {
       return;
    }
    prevIn = inputRate;
-   //console.log("PREV: " + prevIn);
    inputRate = multiplyRate * t;
    currIn = inputRate;
-   //console.log("CURR: " + currIn);
    if (current == 0){
       current++;
    }
@@ -477,7 +456,6 @@ setInterval(() => {
          current++;
       }
       else{
-         //console.log("SKIPPED");
          return;
       }
    }
@@ -488,12 +466,14 @@ setInterval(() => {
    if (localPeerConnection && remotePeerConnection){
       input();
    }
-   //console.log("INPUT RATE: " + inputRate);
    clearInterval();
 }, inputRate)
 
-/*
+
 setInterval(() => {
+   //start = window.performance.now();
+   //console.log(start);
    preventionMethod();
-}, 10)
-*/
+   //end = window.performance.now();
+   //console.log(end);
+}, statRate/2)
