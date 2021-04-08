@@ -35,7 +35,7 @@ var firstSet = 0;                                        // firstSet of Input & 
 var e = 0;                                               // error Count
 var c = 0;                                               // Count when Calculating Error
 
-var inputRate = 7000;                                    // Beginning Input Rate
+var inputRate = 4000;                                    // Beginning Input Rate
 
 var outputRate = inputRate + (inputRate / 2);            // Beginning Output Rate
 var t = inputRate;                                       // Input Rate Variable
@@ -61,7 +61,7 @@ for (i = 0; i < inputBuffer.length; i++){
    else if(random < 0.5){
       inputBuffer[i] = 0;
    }
-   inputBuffer[0] = 0;
+   //inputBuffer[0] = 0;
    //*/
 }
 
@@ -154,7 +154,7 @@ function getUserMediaSuccess(stream) {
    localStream = stream;
    localVideo.srcObject = stream;
 
-   preventionMethod();
+   //preventionMethod();
    drawToCanvas();
 }
 
@@ -351,7 +351,7 @@ function calcStats(results){
          dataChannelReceive.value = 1;
          //console.log('Received Bit: 1');
       }
-      else if (bitrate > 1700){ 
+      else if (bitrate > 1600){ 
          if (received == false){
             received = true;
             return;
@@ -469,7 +469,7 @@ setInterval(() => {
    clearInterval();
 }, inputRate)
 
-
+/*
 setInterval(() => {
    //start = window.performance.now();
    //console.log(start);
@@ -477,3 +477,4 @@ setInterval(() => {
    //end = window.performance.now();
    //console.log(end);
 }, statRate/2)
+*/
