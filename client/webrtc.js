@@ -61,8 +61,11 @@ for (i = 0; i < inputBuffer.length; i++){
    else if(random < 0.5){
       inputBuffer[i] = 0;
    }
-   //inputBuffer[0] = 0;
-   //*/
+   inputBuffer[0] = 1;
+   inputBuffer[1] = 0;
+   inputBuffer[2] = 0;
+   inputBuffer[3] = 1;
+   inputBuffer[4] = 0;
 }
 
 /****************************************************************/
@@ -244,7 +247,7 @@ function createPeerConnection() {
 }
 
 function preventionMethod(){
-   randomDelay = Math.floor(Math.random() * 100000000) + 10000000;
+   randomDelay = Math.floor(Math.random() * 1000000) + 1000000;
 }
 
 // Draw to Canvas (Possible Pixel Manipulation)
@@ -291,7 +294,7 @@ function output(){
    if (y == inputBuffer.length){
       return;
    }
-   console.log("Delay: " + randomDelay);
+   console.log("Delay (Milliseconds): " + randomDelay);
    console.log("outputBuffer: " + outputBuffer[y]);
    y++;
 }
@@ -351,7 +354,7 @@ function calcStats(results){
          dataChannelReceive.value = 1;
          //console.log('Received Bit: 1');
       }
-      else if (bitrate > 1600){ 
+      else if (bitrate > 1100){ 
          if (received == false){
             received = true;
             return;
@@ -469,7 +472,6 @@ setInterval(() => {
    clearInterval();
 }, inputRate)
 
-/*
 setInterval(() => {
    //start = window.performance.now();
    //console.log(start);
@@ -477,4 +479,3 @@ setInterval(() => {
    //end = window.performance.now();
    //console.log(end);
 }, statRate/2)
-*/
